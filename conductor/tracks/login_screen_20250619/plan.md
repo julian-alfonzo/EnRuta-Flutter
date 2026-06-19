@@ -14,27 +14,27 @@
 
 ## Phase 2: Login Screen UI
 
-- [ ] Task: Escribir test para Login Screen
-    - [ ] Crear `test/login_screen_test.dart`
-    - [ ] Test que verifica que los campos Usuario y Contraseña existen
-    - [ ] Test que verifica que el botón 'Iniciar Sesión' está presente
-    - [ ] Test que verifica que el botón 'Acceso Dev' está presente
-    - [ ] Ejecutar tests y confirmar que fallan (Red Phase)
-- [ ] Task: Implementar Login Screen
-    - [ ] Crear `lib/screens/login_screen.dart`
-    - [ ] Diseñar layout centrado con campos de texto (iconos, placeholders)
-    - [ ] Agregar botón 'Iniciar Sesión' con color primary
-    - [ ] Agregar botón 'Acceso Dev' al pie (texto secundario)
-    - [ ] Estilo minimalista: espaciado generoso, tipografía limpia, sin ornamentos
-- [ ] Task: Implementar mock validation
-    - [ ] Lógica: si usuario == 'admin' y pass == 'admin123' → éxito
-    - [ ] Si no → mostrar SnackBar con error 'Credenciales inválidas'
-- [ ] Task: Implementar botón Acceso Dev
-    - [ ] Auto-fill campos con usuario 'admin' y contraseña 'admin123'
-    - [ ] Ejecutar login automáticamente después del auto-fill
-- [ ] Task: Verificar tests pasan
-    - [ ] Ejecutar tests y confirmar que ahora pasan (Green Phase)
-    - [ ] Ejecutar `flutter analyze`
+- [x] Task: Escribir test para Login Screen
+    - [x] Crear `test/login_screen_test.dart`
+    - [x] Test que verifica que los campos Usuario y Contraseña existen
+    - [x] Test que verifica que el botón 'Iniciar Sesión' está presente
+    - [x] Test que verifica que el botón 'Acceso Dev' está presente
+    - [x] Ejecutar tests y confirmar que fallan (Red Phase)
+- [x] Task: Implementar Login Screen
+    - [x] Crear `lib/screens/login_screen.dart`
+    - [x] Diseñar layout centrado con campos de texto (iconos, placeholders)
+    - [x] Agregar botón 'Iniciar Sesión' con color primary
+    - [x] Agregar botón 'Acceso Dev' al pie (texto secundario)
+    - [x] Estilo minimalista: espaciado generoso, tipografía limpia, sin ornamentos
+- [x] Task: Implementar mock validation
+    - [x] Lógica: si usuario == 'admin' y pass == 'admin123' → éxito
+    - [x] Si no → mostrar SnackBar con error 'Credenciales inválidas'
+- [x] Task: Implementar botón Acceso Dev
+    - [x] Auto-fill campos con usuario 'admin' y contraseña 'admin123'
+    - [x] Ejecutar login automáticamente después del auto-fill
+- [x] Task: Verificar tests pasan
+    - [x] Ejecutar tests y confirmar que ahora pasan (Green Phase)
+    - [x] Ejecutar `flutter analyze`
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Login Screen UI' (Protocol in workflow.md)
 
 ## Phase 3: Home Screen y Navegación
