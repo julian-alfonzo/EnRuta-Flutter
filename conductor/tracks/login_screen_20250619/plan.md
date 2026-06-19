@@ -12,7 +12,7 @@
     - [x] Ejecutar `flutter test` y confirmar que los tests existentes pasan
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Sistema de Colores Parametrizado' (Protocol in workflow.md)
 
-## Phase 2: Login Screen UI
+## Phase 2: Login Screen UI [checkpoint: 25a8bcf]
 
 - [x] Task: Escribir test para Login Screen
     - [x] Crear `test/login_screen_test.dart`
@@ -35,7 +35,7 @@
 - [x] Task: Verificar tests pasan [ba507ff]
     - [x] Ejecutar tests y confirmar que ahora pasan (Green Phase)
     - [x] Ejecutar `flutter analyze`
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Login Screen UI' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Login Screen UI' (Protocol in workflow.md)
 
 ## Phase 3: Home Screen y Navegación
 
