@@ -2,7 +2,7 @@
 
 ## Phase 1: Sistema de Colores Parametrizado
 
-- [ ] Task: Crear archivo app_theme.dart con paleta MSM
+- [~] Task: Crear archivo app_theme.dart con paleta MSM
     - [ ] Definir colores como constantes (primary, secondary, tertiary, surface, onSurface)
     - [ ] Crear función `buildLightTheme()` que retorne `ThemeData` con los colores
     - [ ] Configurar `useMaterial3: true`
