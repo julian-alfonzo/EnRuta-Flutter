@@ -2,7 +2,7 @@
 
 ## Phase 1: Project Scaffolding
 
-- [x] Task: Initialize Flutter project
+- [x] Task: Initialize Flutter project [6413c52]
     - [x] Run `flutter create --org com.example helloworld` to scaffold the project
     - [x] Verify the project compiles with `cd helloworld && flutter analyze`
     - [x] Remove the default counter app boilerplate code from `lib/main.dart`
