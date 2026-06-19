@@ -56,11 +56,11 @@
 
 ## Phase 4: Integración y Verificación Final
 
-- [ ] Task: Integrar Login y Home en main.dart
-    - [ ] Configurar LoginScreen como pantalla inicial
-    - [ ] Verificar flujo completo: Login → Home → Cerrar Sesión → Login
-- [ ] Task: Verificación completa
-    - [ ] Ejecutar `flutter test` — todos los tests pasan
-    - [ ] Ejecutar `flutter analyze` — cero errores
-    - [ ] Verificar que `app_theme.dart` puede modificarse fácilmente
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Integración y Verificación Final' (Protocol in workflow.md)
+- [x] Task: Integrar Login y Home en main.dart
+    - [x] Configurar LoginScreen como pantalla inicial
+    - [x] Verificar flujo completo: Login → Home → Cerrar Sesión → Login
+- [x] Task: Verificación completa
+    - [x] Ejecutar `flutter test` — todos los tests pasan
+    - [x] Ejecutar `flutter analyze` — cero errores
+    - [x] Verificar que `app_theme.dart` puede modificarse fácilmente
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Integración y Verificación Final' (Protocol in workflow.md)

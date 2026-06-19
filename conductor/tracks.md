@@ -9,5 +9,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Implementar Login Screen con Sistema de Colores**
+- [x] **Track: Implementar Login Screen con Sistema de Colores**
   *Link: [./tracks/login_screen_20250619/](./tracks/login_screen_20250619/)*
