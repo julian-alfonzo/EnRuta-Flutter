@@ -24,11 +24,11 @@
 
 ## Phase 3: Cross-Platform Build Verification
 
-- [~] Task: Build and verify Android APK
-    - [~] Run `flutter build apk --debug` and confirm successful build
-- [ ] Task: Build and verify iOS (architecture check)
-    - [ ] Run `flutter build ios --no-codesign` and confirm successful build
-- [ ] Task: Verify full project health
-    - [ ] Run `flutter test` to confirm all tests still pass
-    - [ ] Run `flutter analyze` to confirm zero issues
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Cross-Platform Build Verification' (Protocol in workflow.md)
+- [x] Task: Build and verify Android APK
+    - [x] Run `flutter build apk --debug` and confirm successful build
+- [x] Task: Build and verify iOS (architecture check)
+    - [x] Run `flutter build ios --no-codesign` and confirm successful build (via direct xcodebuild)
+- [x] Task: Verify full project health
+    - [x] Run `flutter test` to confirm all tests still pass
+    - [x] Run `flutter analyze` to confirm zero issues
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Cross-Platform Build Verification' (Protocol in workflow.md)
