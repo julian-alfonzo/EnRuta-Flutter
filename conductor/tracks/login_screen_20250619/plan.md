@@ -39,19 +39,19 @@
 
 ## Phase 3: Home Screen y Navegación
 
-- [ ] Task: Escribir test para Home Screen
-    - [ ] Crear `test/home_screen_test.dart`
-    - [ ] Test que verifica texto 'Bienvenido' con nombre de usuario
-    - [ ] Test que verifica botón 'Cerrar Sesión'
-    - [ ] Ejecutar tests y confirmar que fallan (Red Phase)
-- [ ] Task: Implementar Home Screen
-    - [ ] Crear `lib/screens/home_screen.dart`
-    - [ ] Mostrar 'Bienvenido, {usuario}'
-    - [ ] Botón 'Cerrar Sesión' que vuelve al Login
-    - [ ] Integrar navegación con Navigator.pushReplacement
-- [ ] Task: Verificar tests pasan
-    - [ ] Ejecutar tests y confirmar que pasan
-    - [ ] Ejecutar `flutter analyze`
+- [x] Task: Escribir test para Home Screen
+    - [x] Crear `test/home_screen_test.dart`
+    - [x] Test que verifica texto 'Bienvenido' con nombre de usuario
+    - [x] Test que verifica botón 'Cerrar Sesión'
+    - [x] Ejecutar tests y confirmar que fallan (Red Phase)
+- [x] Task: Implementar Home Screen
+    - [x] Crear `lib/screens/home_screen.dart`
+    - [x] Mostrar 'Bienvenido, {usuario}'
+    - [x] Botón 'Cerrar Sesión' que vuelve al Login
+    - [x] Integrar navegación con Navigator.pushReplacement
+- [x] Task: Verificar tests pasan
+    - [x] Ejecutar tests y confirmar que pasan
+    - [x] Ejecutar `flutter analyze`
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Home Screen y Navegación' (Protocol in workflow.md)
 
 ## Phase 4: Integración y Verificación Final

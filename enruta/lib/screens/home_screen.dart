@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'login_screen.dart';
+
 class HomeScreen extends StatelessWidget {
   final String username;
 
@@ -12,7 +14,27 @@ class HomeScreen extends StatelessWidget {
         title: const Text('EnRuta'),
       ),
       body: Center(
-        child: Text('Bienvenido, $username'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Bienvenido, $username',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 32),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const LoginScreen(),
+                  ),
+                );
+              },
+              child: const Text('Cerrar Sesión'),
+            ),
+          ],
+        ),
       ),
     );
   }
