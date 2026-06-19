@@ -7,9 +7,9 @@
     - [x] Crear función `buildLightTheme()` que retorne `ThemeData` con los colores
     - [x] Configurar `useMaterial3: true`
     - [x] Integrar el tema en `main.dart` usando `theme: buildLightTheme()`
-- [ ] Task: Verificar que el tema se aplica correctamente
-    - [ ] Ejecutar `flutter analyze` y confirmar cero errores
-    - [ ] Ejecutar `flutter test` y confirmar que los tests existentes pasan
+- [x] Task: Verificar que el tema se aplica correctamente [4aa0054]
+    - [x] Ejecutar `flutter analyze` y confirmar cero errores
+    - [x] Ejecutar `flutter test` y confirmar que los tests existentes pasan
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Sistema de Colores Parametrizado' (Protocol in workflow.md)
 
 ## Phase 2: Login Screen UI
