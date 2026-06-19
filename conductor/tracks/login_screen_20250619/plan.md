@@ -37,7 +37,7 @@
     - [x] Ejecutar `flutter analyze`
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Login Screen UI' (Protocol in workflow.md)
 
-## Phase 3: Home Screen y Navegación
+## Phase 3: Home Screen y Navegación [checkpoint: 8acdc6f]
 
 - [x] Task: Escribir test para Home Screen [1f1c43e]
     - [x] Crear `test/home_screen_test.dart`
@@ -52,7 +52,7 @@
 - [x] Task: Verificar tests pasan [1f1c43e]
     - [x] Ejecutar tests y confirmar que pasan
     - [x] Ejecutar `flutter analyze`
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Home Screen y Navegación' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Home Screen y Navegación' (Protocol in workflow.md)
 
 ## Phase 4: Integración y Verificación Final
 
