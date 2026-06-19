@@ -20,19 +20,19 @@
     - [x] Test que verifica que el botón 'Iniciar Sesión' está presente
     - [x] Test que verifica que el botón 'Acceso Dev' está presente
     - [x] Ejecutar tests y confirmar que fallan (Red Phase)
-- [x] Task: Implementar Login Screen
+- [x] Task: Implementar Login Screen [ba507ff]
     - [x] Crear `lib/screens/login_screen.dart`
     - [x] Diseñar layout centrado con campos de texto (iconos, placeholders)
     - [x] Agregar botón 'Iniciar Sesión' con color primary
     - [x] Agregar botón 'Acceso Dev' al pie (texto secundario)
     - [x] Estilo minimalista: espaciado generoso, tipografía limpia, sin ornamentos
-- [x] Task: Implementar mock validation
+- [x] Task: Implementar mock validation [ba507ff]
     - [x] Lógica: si usuario == 'admin' y pass == 'admin123' → éxito
     - [x] Si no → mostrar SnackBar con error 'Credenciales inválidas'
-- [x] Task: Implementar botón Acceso Dev
+- [x] Task: Implementar botón Acceso Dev [ba507ff]
     - [x] Auto-fill campos con usuario 'admin' y contraseña 'admin123'
     - [x] Ejecutar login automáticamente después del auto-fill
-- [x] Task: Verificar tests pasan
+- [x] Task: Verificar tests pasan [ba507ff]
     - [x] Ejecutar tests y confirmar que ahora pasan (Green Phase)
     - [x] Ejecutar `flutter analyze`
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Login Screen UI' (Protocol in workflow.md)
