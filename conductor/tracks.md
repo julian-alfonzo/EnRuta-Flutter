@@ -6,3 +6,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 - [x] **Track: Create EnRuta Flutter app with Android and iOS support**
   *Link: [./tracks/helloworld_flutter_20250619/](./tracks/helloworld_flutter_20250619/)*
+
+---
+
+- [ ] **Track: Implementar Login Screen con Sistema de Colores**
+  *Link: [./tracks/login_screen_20250619/](./tracks/login_screen_20250619/)*
