@@ -9,7 +9,7 @@
     - [x] Create a basic MaterialApp structure in `lib/main.dart`
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Project Scaffolding' (Protocol in workflow.md)
 
-## Phase 2: Hello World UI Implementation
+## Phase 2: Hello World UI Implementation [checkpoint: 1fdb863]
 
 - [x] Task: Write failing test for Hello World widget [6413c52]
     - [x] Create `test/widget_test.dart` with a test that verifies "Hello World" text is rendered
