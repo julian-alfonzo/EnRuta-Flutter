@@ -49,6 +49,7 @@ class ApiException implements Exception {
 
 class ApiClient {
   final String baseUrl;
+  final String _pathPrefix;
   final http.Client _client;
   final Duration _timeout;
   String? _accessToken;
@@ -56,6 +57,7 @@ class ApiClient {
 
   ApiClient({
     required this.baseUrl,
+    this._pathPrefix = '/api/v1',
     Duration timeout = const Duration(seconds: 10),
     http.Client? client,
   })  : _timeout = timeout,
@@ -80,7 +82,8 @@ class ApiClient {
       };
 
   Uri _uri(String path, [Map<String, String>? queryParams]) {
-    final uri = Uri.parse('$baseUrl$path');
+    final fullPath = path.startsWith(_pathPrefix) ? path : '$_pathPrefix$path';
+    final uri = Uri.parse('$baseUrl$fullPath');
     if (queryParams != null && queryParams.isNotEmpty) {
       return uri.replace(queryParameters: queryParams);
     }
@@ -129,6 +132,7 @@ class ApiClient {
           .timeout(_timeout);
       return await _handleResponse(response);
     } catch (e) {
+      if (e is ApiException) rethrow;
       throw ApiException.networkError(e);
     }
   }
@@ -140,6 +144,7 @@ class ApiClient {
           .timeout(_timeout);
       return await _handleResponse(response);
     } catch (e) {
+      if (e is ApiException) rethrow;
       throw ApiException.networkError(e);
     }
   }
@@ -151,6 +156,7 @@ class ApiClient {
           .timeout(_timeout);
       return await _handleResponse(response);
     } catch (e) {
+      if (e is ApiException) rethrow;
       throw ApiException.networkError(e);
     }
   }
@@ -162,6 +168,7 @@ class ApiClient {
           .timeout(_timeout);
       return await _handleResponse(response);
     } catch (e) {
+      if (e is ApiException) rethrow;
       throw ApiException.networkError(e);
     }
   }
@@ -177,9 +184,10 @@ class ApiClient {
         )
         .timeout(_timeout);
     if (response.statusCode == 200) {
-      final body = jsonDecode(response.body);
-      _accessToken = body['accessToken'];
-      _refreshToken = body['refreshToken'];
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      final data = body['data'] as Map<String, dynamic>? ?? body;
+      _accessToken = data['accessToken'] as String?;
+      _refreshToken = data['refreshToken'] as String?;
       return body;
     }
     throw ApiException.fromResponse(response);

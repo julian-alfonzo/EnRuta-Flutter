@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../database/database_helper.dart';
+import '../main.dart';
 import '../models/agente.dart';
 
 class AgenteFormScreen extends StatefulWidget {
@@ -14,7 +14,6 @@ class AgenteFormScreen extends StatefulWidget {
 
 class _AgenteFormScreenState extends State<AgenteFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _db = DatabaseHelper();
 
   late final TextEditingController _legajoController;
   late final TextEditingController _nombreController;
@@ -71,9 +70,9 @@ class _AgenteFormScreenState extends State<AgenteFormScreen> {
 
     try {
       if (_esEdicion) {
-        await _db.updateAgente(agente);
+        await AppServices.instance.apiService.updateAgente(agente);
       } else {
-        await _db.insertAgente(agente);
+        await AppServices.instance.apiService.createAgente(agente);
       }
 
       if (mounted) {

@@ -1,15 +1,60 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../app_theme.dart';
+import '../main.dart';
+import '../services/api_client.dart';
 import 'agentes_screen.dart';
 import 'login_screen.dart';
 import 'reportes_screen.dart';
 import 'seleccion_agente_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   final String username;
 
   const HomeScreen({super.key, required this.username});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  Timer? _statusTimer;
+  bool _conectado = false;
+  int _pendientes = 0;
+  int _fallidos = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkStatus();
+    _statusTimer = Timer.periodic(const Duration(seconds: 10), (_) {
+      _checkStatus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _statusTimer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _checkStatus() async {
+    final api = AppServices.instance.apiClient;
+    final sync = AppServices.instance.syncService;
+    try {
+      await api.getAgentes(limit: 1);
+      _conectado = true;
+    } on ApiException catch (e) {
+      _conectado = e.statusCode >= 400 && e.statusCode < 500;
+    } catch (_) {
+      _conectado = false;
+    }
+    _pendientes = await sync.pendingCount;
+    _fallidos = await sync.failedCount;
+    if (mounted) setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,10 +82,16 @@ class HomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Bienvenido, $username',
+              'Bienvenido, ${widget.username}',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 8),
+            _StatusBar(
+              conectado: _conectado,
+              pendientes: _pendientes,
+              fallidos: _fallidos,
+            ),
+            const SizedBox(height: 16),
             Text(
               'Seleccione una opción',
               style: TextStyle(
@@ -70,55 +121,117 @@ class HomeScreen extends StatelessWidget {
                       );
                     },
                   ),
-                    _MenuCard(
-                      icon: Icons.air,
-                      label: 'Alcoholemia',
-                      subtitle: 'Controles',
-                      color: AppColors.secondary,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const SeleccionAgenteScreen(
-                                destino: 'alcoholemia'),
-                          ),
-                        );
-                      },
-                    ),
-                    _MenuCard(
-                      icon: Icons.feedback,
-                      label: 'Observaciones',
-                      subtitle: 'Reclamos y notas',
-                      color: const Color(0xFFF2A20C),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const SeleccionAgenteScreen(
-                                destino: 'observaciones'),
-                          ),
-                        );
-                      },
-                    ),
-                    _MenuCard(
-                      icon: Icons.assessment,
-                      label: 'Reportes',
-                      subtitle: 'Alcoholemia y agentes',
-                      color: const Color(0xFF7B1FA2),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const ReportesScreen(),
-                          ),
-                        );
-                      },
-                    ),
+                  _MenuCard(
+                    icon: Icons.air,
+                    label: 'Alcoholemia',
+                    subtitle: 'Controles',
+                    color: AppColors.secondary,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const SeleccionAgenteScreen(
+                              destino: 'alcoholemia'),
+                        ),
+                      );
+                    },
+                  ),
+                  _MenuCard(
+                    icon: Icons.feedback,
+                    label: 'Observaciones',
+                    subtitle: 'Reclamos y notas',
+                    color: const Color(0xFFF2A20C),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const SeleccionAgenteScreen(
+                              destino: 'observaciones'),
+                        ),
+                      );
+                    },
+                  ),
+                  _MenuCard(
+                    icon: Icons.assessment,
+                    label: 'Reportes',
+                    subtitle: 'Alcoholemia y agentes',
+                    color: const Color(0xFF7B1FA2),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ReportesScreen(),
+                        ),
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _StatusBar extends StatelessWidget {
+  final bool conectado;
+  final int pendientes;
+  final int fallidos;
+
+  const _StatusBar({
+    required this.conectado,
+    required this.pendientes,
+    required this.fallidos,
+  });
+
+  Color get _color {
+    if (!conectado) return Colors.red;
+    if (pendientes > 0 || fallidos > 0) return Colors.orange;
+    return Colors.green;
+  }
+
+  String get _texto {
+    if (!conectado) return 'Offline — datos locales';
+    final parts = <String>[];
+    if (pendientes > 0) parts.add('$pendientes pendientes');
+    if (fallidos > 0) parts.add('$fallidos fallidos');
+    if (parts.isEmpty) return 'Conectado — sincronizado';
+    return 'Conectado — ${parts.join(', ')}';
+  }
+
+  IconData get _icon {
+    if (!conectado) return Icons.cloud_off;
+    if (pendientes > 0 || fallidos > 0) return Icons.sync;
+    return Icons.cloud_done;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: _color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: _color.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(_icon, size: 16, color: _color),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(
+              _texto,
+              style: TextStyle(
+                fontSize: 12,
+                color: _color,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

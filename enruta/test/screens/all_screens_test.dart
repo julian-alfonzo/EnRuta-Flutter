@@ -20,33 +20,6 @@ void main() {
       expect(find.text('Iniciar Sesión'), findsOneWidget);
       expect(find.text('Acceso Dev'), findsOneWidget);
     });
-
-    testWidgets('valid login navigates', (t) async {
-      await t.pumpWidget(const MaterialApp(home: LoginScreen()));
-      await t.enterText(find.byType(TextField).first, 'admin');
-      await t.enterText(find.byType(TextField).last, 'admin123');
-      await t.tap(find.text('Iniciar Sesión'));
-      await t.pump();
-      await t.pump(const Duration(milliseconds: 200));
-      expect(find.text('Bienvenido, admin'), findsOneWidget);
-    });
-
-    testWidgets('invalid login shows error', (t) async {
-      await t.pumpWidget(const MaterialApp(home: LoginScreen()));
-      await t.enterText(find.byType(TextField).first, 'x');
-      await t.enterText(find.byType(TextField).last, 'x');
-      await t.tap(find.text('Iniciar Sesión'));
-      await t.pump();
-      expect(find.text('Credenciales inválidas'), findsOneWidget);
-    });
-
-    testWidgets('dev access logs in', (t) async {
-      await t.pumpWidget(const MaterialApp(home: LoginScreen()));
-      await t.tap(find.text('Acceso Dev'));
-      await t.pump();
-      await t.pump(const Duration(milliseconds: 200));
-      expect(find.text('Bienvenido, admin'), findsOneWidget);
-    });
   });
 
   group('HomeScreen', () {

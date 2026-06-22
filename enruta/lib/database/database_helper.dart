@@ -121,14 +121,17 @@ class DatabaseHelper {
           registro_id INTEGER,
           payload TEXT NOT NULL,
           intentos INTEGER NOT NULL DEFAULT 0,
-          status TEXT NOT NULL DEFAULT 'pending',
           created_at TEXT NOT NULL
         )
       ''');
     }
     if (oldVersion < 4) {
-      await db.execute(
-          "ALTER TABLE sync_queue ADD COLUMN status TEXT NOT NULL DEFAULT 'pending'");
+      try {
+        await db.execute(
+            "ALTER TABLE sync_queue ADD COLUMN status TEXT NOT NULL DEFAULT 'pending'");
+      } on Exception {
+        // columna ya existe, migración previa parcial
+      }
     }
   }
 

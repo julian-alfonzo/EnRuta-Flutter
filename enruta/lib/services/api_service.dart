@@ -11,6 +11,7 @@ class ApiService {
   final ApiClient _api;
   final DatabaseHelper _db;
   final SyncService _sync;
+  final Map<int, int> _localToServerId = {};
 
   ApiService({
     required String baseUrl,
@@ -28,6 +29,26 @@ class ApiService {
   }
 
   // ── Auth ──
+
+  Future<int?> _resolveServerAgentId(int localId) async {
+    if (_localToServerId.containsKey(localId)) {
+      return _localToServerId[localId];
+    }
+    try {
+      final local = await _db.getAgenteById(localId);
+      if (local == null) return null;
+      final response = await _api.getAgenteByLegajo(local.legajo);
+      final data = response['data'] as Map<String, dynamic>?;
+      if (data != null) {
+        final serverId = data['id'] as int;
+        _localToServerId[localId] = serverId;
+        return serverId;
+      }
+    } on ApiException {
+      // sin conexión
+    }
+    return null;
+  }
 
   Future<bool> login(String usuario, String password) async {
     try {
@@ -192,12 +213,15 @@ class ApiService {
 
   Future<int> createControl(ControlAlcoholemia control) async {
     final localId = await _db.insertControl(control);
-    try {
-      await _api.createAlcoholemia(
-          control.agenteId, _toApiAlcoholemia(control));
-    } on ApiException {
-      await _sync.enqueue('alcoholemia', 'create', localId,
-          {..._toApiAlcoholemia(control), 'agenteId': control.agenteId});
+    final serverAgenteId = await _resolveServerAgentId(control.agenteId);
+    if (serverAgenteId != null) {
+      try {
+        await _api.createAlcoholemia(
+            serverAgenteId, _toApiAlcoholemia(control));
+      } on ApiException {
+        await _sync.enqueue('alcoholemia', 'create', localId,
+            {..._toApiAlcoholemia(control), 'agenteId': serverAgenteId});
+      }
     }
     return localId;
   }
@@ -225,12 +249,15 @@ class ApiService {
 
   Future<int> createObservacion(ObservacionReclamo o) async {
     final localId = await _db.insertObservacionReclamo(o);
-    try {
-      await _api.createObservacion(
-          o.agenteId, _toApiObservacion(o));
-    } on ApiException {
-      await _sync.enqueue('observacion', 'create', localId,
-          {..._toApiObservacion(o), 'agenteId': o.agenteId});
+    final serverAgenteId = await _resolveServerAgentId(o.agenteId);
+    if (serverAgenteId != null) {
+      try {
+        await _api.createObservacion(
+            serverAgenteId, _toApiObservacion(o));
+      } on ApiException {
+        await _sync.enqueue('observacion', 'create', localId,
+            {..._toApiObservacion(o), 'agenteId': serverAgenteId});
+      }
     }
     return localId;
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../main.dart';
 import '../app_theme.dart';
 import '../database/database_helper.dart';
 import '../models/agente.dart';
@@ -110,7 +111,7 @@ class _AgenteDetailScreenState extends State<AgenteDetailScreen>
       ),
     );
     if (ok == true) {
-      await _db.deleteControl(c.id!);
+      await AppServices.instance.apiService.deleteControl(c.id!);
       _cargarDatos();
     }
   }
@@ -134,7 +135,7 @@ class _AgenteDetailScreenState extends State<AgenteDetailScreen>
       ),
     );
     if (ok == true) {
-      await _db.deleteObservacionReclamo(o.id!);
+      await AppServices.instance.apiService.deleteObservacion(o.id!);
       _cargarDatos();
     }
   }

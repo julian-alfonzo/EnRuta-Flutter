@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../app_theme.dart';
-import '../services/sync_service.dart';
+import '../main.dart';
 import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -15,27 +15,39 @@ class _LoginScreenState extends State<LoginScreen> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _loading = false;
 
-  void _login() {
-    final username = _usernameController.text;
-    final password = _passwordController.text;
+  Future<void> _login() async {
+    final usuario = _usernameController.text.trim();
+    final password = _passwordController.text.trim();
 
-    if (username == 'admin' && password == 'admin123') {
-      SyncService().fullSync();
+    if (usuario == 'admin' && password == 'admin123') {
+      setState(() => _loading = true);
+      try {
+        final api = AppServices.instance.apiClient;
+        await api.login('admin', 'admin123').timeout(const Duration(seconds: 5));
+        await AppServices.instance.syncService.fullSync();
+      } catch (_) {
+        // sin backend, modo offline
+      }
+      if (!mounted) return;
+      setState(() => _loading = false);
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => HomeScreen(username: username),
+          builder: (_) => HomeScreen(username: usuario),
         ),
       );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Credenciales inválidas'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      return;
     }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Credenciales inválidas'),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
 
   void _devAccess() {
@@ -61,30 +73,21 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Icon(
-                Icons.directions_car,
-                size: 80,
-                color: AppColors.primary,
-              ),
+              const Icon(Icons.directions_car,
+                  size: 80, color: AppColors.primary),
               const SizedBox(height: 16),
-              const Text(
-                'EnRuta',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.onSurface,
-                ),
-              ),
+              const Text('EnRuta',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.onSurface)),
               const SizedBox(height: 8),
-              Text(
-                'Inicia sesión para continuar',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.onSurface.withValues(alpha: 0.6),
-                ),
-              ),
+              Text('Inicia sesión para continuar',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: AppColors.onSurface.withValues(alpha: 0.6))),
               const SizedBox(height: 48),
               TextField(
                 controller: _usernameController,
@@ -101,32 +104,32 @@ class _LoginScreenState extends State<LoginScreen> {
                   labelText: 'Contraseña',
                   prefixIcon: const Icon(Icons.lock),
                   suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _obscurePassword = !_obscurePassword;
-                      });
-                    },
+                    icon: Icon(_obscurePassword
+                        ? Icons.visibility_off
+                        : Icons.visibility),
+                    onPressed: () =>
+                        setState(() => _obscurePassword = !_obscurePassword),
                   ),
                 ),
               ),
               const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: _login,
-                child: const Text('Iniciar Sesión'),
+                onPressed: _loading ? null : _login,
+                child: _loading
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white))
+                    : const Text('Iniciar Sesión'),
               ),
               const SizedBox(height: 48),
               TextButton(
-                onPressed: _devAccess,
-                child: const Text(
-                  'Acceso Dev',
-                  style: TextStyle(
-                    fontSize: 12,
-                    decoration: TextDecoration.underline,
-                  ),
-                ),
+                onPressed: _loading ? null : _devAccess,
+                child: const Text('Acceso Dev',
+                    style: TextStyle(
+                        fontSize: 12,
+                        decoration: TextDecoration.underline)),
               ),
             ],
           ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../main.dart';
 import '../app_theme.dart';
-import '../database/database_helper.dart';
 import '../models/observacion_reclamo.dart';
 
 class ObservacionReclamoFormScreen extends StatefulWidget {
@@ -22,7 +22,6 @@ class ObservacionReclamoFormScreen extends StatefulWidget {
 class _ObservacionReclamoFormScreenState
     extends State<ObservacionReclamoFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _db = DatabaseHelper();
 
   late String _tipo;
   late bool _resuelto;
@@ -67,9 +66,9 @@ class _ObservacionReclamoFormScreenState
 
     try {
       if (_esEdicion) {
-        await _db.updateObservacionReclamo(or);
+        await AppServices.instance.apiService.updateObservacion(or);
       } else {
-        await _db.insertObservacionReclamo(or);
+        await AppServices.instance.apiService.createObservacion(or);
       }
       if (mounted) Navigator.pop(context, true);
     } on Exception catch (e) {

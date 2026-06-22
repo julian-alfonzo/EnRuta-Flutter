@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../app_theme.dart';
 import '../database/database_helper.dart';
+import '../main.dart';
 import '../models/agente.dart';
 import '../models/control_alcoholemia.dart';
 
@@ -23,7 +24,6 @@ class ControlAlcoholemiaFormScreen extends StatefulWidget {
 class _ControlAlcoholemiaFormScreenState
     extends State<ControlAlcoholemiaFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _db = DatabaseHelper();
 
   late String _resultado;
   late String _servicioExtra;
@@ -53,7 +53,7 @@ class _ControlAlcoholemiaFormScreenState
   }
 
   Future<void> _cargarAgente() async {
-    _agente = await _db.getAgenteById(widget.agenteId);
+    _agente = await DatabaseHelper().getAgenteById(widget.agenteId);
     if (mounted) setState(() {});
   }
 
@@ -84,9 +84,9 @@ class _ControlAlcoholemiaFormScreenState
 
     try {
       if (_esEdicion) {
-        await _db.updateControl(control);
+        await AppServices.instance.apiService.updateControl(control);
       } else {
-        await _db.insertControl(control);
+        await AppServices.instance.apiService.createControl(control);
       }
       if (mounted) Navigator.pop(context, true);
     } on Exception catch (e) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../main.dart';
 import '../app_theme.dart';
 import '../database/database_helper.dart';
 import '../models/agente.dart';
@@ -65,7 +66,7 @@ class _AgentesScreenState extends State<AgentesScreen> {
     );
 
     if (confirmado == true) {
-      await _db.deleteAgente(agente.id!);
+      await AppServices.instance.apiService.deleteAgente(agente.id!);
       _cargarAgentes();
     }
   }
