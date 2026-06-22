@@ -4,6 +4,7 @@ class ObservacionReclamo {
   final String tipo;
   final String descripcion;
   final String fecha;
+  final bool resuelto;
   final String? createdAt;
 
   ObservacionReclamo({
@@ -12,6 +13,7 @@ class ObservacionReclamo {
     required this.tipo,
     required this.descripcion,
     required this.fecha,
+    this.resuelto = false,
     this.createdAt,
   });
 
@@ -22,6 +24,7 @@ class ObservacionReclamo {
       'tipo': tipo,
       'descripcion': descripcion,
       'fecha': fecha,
+      'resuelto': resuelto ? 1 : 0,
       'created_at': createdAt,
     };
   }
@@ -33,6 +36,7 @@ class ObservacionReclamo {
       tipo: map['tipo'] as String,
       descripcion: map['descripcion'] as String,
       fecha: map['fecha'] as String,
+      resuelto: (map['resuelto'] as int?) == 1,
       createdAt: map['created_at'] as String?,
     );
   }
@@ -44,6 +48,7 @@ class ObservacionReclamo {
       'tipo': tipo,
       'descripcion': descripcion,
       'fecha': fecha,
+      'resuelto': resuelto,
     };
   }
 
@@ -53,6 +58,7 @@ class ObservacionReclamo {
     String? tipo,
     String? descripcion,
     String? fecha,
+    bool? resuelto,
     String? createdAt,
   }) {
     return ObservacionReclamo(
@@ -61,6 +67,7 @@ class ObservacionReclamo {
       tipo: tipo ?? this.tipo,
       descripcion: descripcion ?? this.descripcion,
       fecha: fecha ?? this.fecha,
+      resuelto: resuelto ?? this.resuelto,
       createdAt: createdAt ?? this.createdAt,
     );
   }

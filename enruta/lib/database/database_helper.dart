@@ -16,6 +16,16 @@ class DatabaseHelper {
 
   static Database? _database;
 
+  static Future<void> resetForTest() async {
+    final db = _database;
+    _database = null;
+    if (db != null) {
+      final path = db.path;
+      await db.close();
+      await deleteDatabase(path);
+    }
+  }
+
   Future<Database> get database async {
     if (_database != null) return _database!;
     _database = await _initDatabase();
@@ -27,8 +37,12 @@ class DatabaseHelper {
     final path = join(dbPath, 'enruta.db');
     return await openDatabase(
       path,
-      version: 1,
+      version: 4,
+      onConfigure: (db) async {
+        await db.execute('PRAGMA foreign_keys = ON');
+      },
       onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
     );
   }
 
@@ -68,6 +82,7 @@ class DatabaseHelper {
         tipo TEXT NOT NULL,
         descripcion TEXT NOT NULL,
         fecha TEXT NOT NULL,
+        resuelto INTEGER NOT NULL DEFAULT 0,
         created_at TEXT,
         FOREIGN KEY (agente_id) REFERENCES agentes(id) ON DELETE CASCADE
       )
@@ -77,6 +92,44 @@ class DatabaseHelper {
         'CREATE INDEX IF NOT EXISTS idx_controles_agente_fecha ON controles_alcoholemia(agente_id, fecha)');
     await db.execute(
         'CREATE INDEX IF NOT EXISTS idx_observaciones_agente ON observaciones_reclamos(agente_id)');
+
+    await db.execute('''
+      CREATE TABLE sync_queue (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        entidad TEXT NOT NULL,
+        operacion TEXT NOT NULL,
+        registro_id INTEGER,
+        payload TEXT NOT NULL,
+        intentos INTEGER NOT NULL DEFAULT 0,
+        status TEXT NOT NULL DEFAULT 'pending',
+        created_at TEXT NOT NULL
+      )
+    ''');
+  }
+
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute(
+          'ALTER TABLE observaciones_reclamos ADD COLUMN resuelto INTEGER NOT NULL DEFAULT 0');
+    }
+    if (oldVersion < 3) {
+      await db.execute('''
+        CREATE TABLE sync_queue (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          entidad TEXT NOT NULL,
+          operacion TEXT NOT NULL,
+          registro_id INTEGER,
+          payload TEXT NOT NULL,
+          intentos INTEGER NOT NULL DEFAULT 0,
+          status TEXT NOT NULL DEFAULT 'pending',
+          created_at TEXT NOT NULL
+        )
+      ''');
+    }
+    if (oldVersion < 4) {
+      await db.execute(
+          "ALTER TABLE sync_queue ADD COLUMN status TEXT NOT NULL DEFAULT 'pending'");
+    }
   }
 
   Future<void> seedIfEmpty() async {
@@ -271,6 +324,7 @@ class DatabaseHelper {
       'tipo': or.tipo,
       'descripcion': or.descripcion,
       'fecha': or.fecha,
+      'resuelto': or.resuelto ? 1 : 0,
       'created_at': now,
     });
   }
@@ -283,6 +337,7 @@ class DatabaseHelper {
         'tipo': or.tipo,
         'descripcion': or.descripcion,
         'fecha': or.fecha,
+        'resuelto': or.resuelto ? 1 : 0,
       },
       where: 'id = ?',
       whereArgs: [or.id],
@@ -305,5 +360,112 @@ class DatabaseHelper {
       orderBy: 'fecha DESC',
     );
     return maps.map((map) => ObservacionReclamo.fromMap(map)).toList();
+  }
+
+  Future<List<Map<String, dynamic>>> getControlesReporteEntreFechas(
+      String desde, String hasta) async {
+    final db = await database;
+    return await db.rawQuery('''
+      SELECT c.*, a.legajo, a.apellido_nombre
+      FROM controles_alcoholemia c
+      JOIN agentes a ON c.agente_id = a.id
+      WHERE c.fecha BETWEEN ? AND ?
+      ORDER BY c.fecha DESC, a.apellido_nombre ASC
+    ''', [desde, hasta]);
+  }
+
+  Future<List<Map<String, dynamic>>> getObservacionesReporteByAgente(
+      int agenteId) async {
+    final db = await database;
+    return await db.rawQuery('''
+      SELECT o.*, a.legajo, a.apellido_nombre, a.dependencia, a.cargo
+      FROM observaciones_reclamos o
+      JOIN agentes a ON o.agente_id = a.id
+      WHERE o.agente_id = ?
+      ORDER BY o.fecha DESC
+    ''', [agenteId]);
+  }
+
+  // ── Sync Queue ──
+
+  Future<int> enqueueSync(String entidad, String operacion,
+      int? registroId, String payload) async {
+    final db = await database;
+    return await db.insert('sync_queue', {
+      'entidad': entidad,
+      'operacion': operacion,
+      'registro_id': registroId,
+      'payload': payload,
+      'intentos': 0,
+      'created_at': DateTime.now().toIso8601String(),
+    });
+  }
+
+  Future<List<Map<String, dynamic>>> getPendingSyncs() async {
+    final db = await database;
+    return await db.query(
+      'sync_queue',
+      where: "status = 'pending'",
+      orderBy: 'id ASC',
+      limit: 50,
+    );
+  }
+
+  Future<int> getPendingSyncCount() async {
+    final db = await database;
+    final result = await db.rawQuery(
+        "SELECT COUNT(*) as count FROM sync_queue WHERE status = 'pending'");
+    return Sqflite.firstIntValue(result) ?? 0;
+  }
+
+  Future<int> getFailedSyncCount() async {
+    final db = await database;
+    final result = await db.rawQuery(
+        "SELECT COUNT(*) as count FROM sync_queue WHERE status = 'failed'");
+    return Sqflite.firstIntValue(result) ?? 0;
+  }
+
+  Future<void> incrementSyncIntentos(int id) async {
+    final db = await database;
+    await db.rawUpdate(
+        'UPDATE sync_queue SET intentos = intentos + 1 WHERE id = ?', [id]);
+  }
+
+  Future<void> markSyncFailed(int id) async {
+    final db = await database;
+    await db.rawUpdate(
+        "UPDATE sync_queue SET status = 'failed' WHERE id = ?", [id]);
+  }
+
+  Future<void> markSyncPending(int id) async {
+    final db = await database;
+    await db.rawUpdate(
+        "UPDATE sync_queue SET status = 'pending', intentos = 0 WHERE id = ?", [id]);
+  }
+
+  Future<List<int>> getFailedSyncIds() async {
+    final db = await database;
+    final result = await db.rawQuery(
+        "SELECT id FROM sync_queue WHERE status = 'failed'");
+    return result.map((r) => r['id'] as int).toList();
+  }
+
+  Future<void> deleteSyncItem(int id) async {
+    final db = await database;
+    await db.delete('sync_queue', where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<bool> hasPendingSyncForRecord(String entidad, int registroId) async {
+    final db = await database;
+    final result = await db.rawQuery(
+      "SELECT COUNT(*) as count FROM sync_queue WHERE entidad = ? AND registro_id = ? AND status = 'pending'",
+      [entidad, registroId],
+    );
+    return (Sqflite.firstIntValue(result) ?? 0) > 0;
+  }
+
+  Future<void> clearSyncQueue() async {
+    final db = await database;
+    await db.delete('sync_queue');
   }
 }

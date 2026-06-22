@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../app_theme.dart';
 import 'agentes_screen.dart';
 import 'login_screen.dart';
+import 'reportes_screen.dart';
 import 'seleccion_agente_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -95,6 +96,20 @@ class HomeScreen extends StatelessWidget {
                           MaterialPageRoute(
                             builder: (_) => const SeleccionAgenteScreen(
                                 destino: 'observaciones'),
+                          ),
+                        );
+                      },
+                    ),
+                    _MenuCard(
+                      icon: Icons.assessment,
+                      label: 'Reportes',
+                      subtitle: 'Alcoholemia y agentes',
+                      color: const Color(0xFF7B1FA2),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const ReportesScreen(),
                           ),
                         );
                       },

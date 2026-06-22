@@ -25,6 +25,7 @@ class _ObservacionReclamoFormScreenState
   final _db = DatabaseHelper();
 
   late String _tipo;
+  late bool _resuelto;
   late final TextEditingController _fechaController;
   late final TextEditingController _descripcionController;
   bool _guardando = false;
@@ -36,6 +37,7 @@ class _ObservacionReclamoFormScreenState
     super.initState();
     final o = widget.observacion;
     _tipo = o?.tipo ?? 'Observación';
+    _resuelto = o?.resuelto ?? false;
     _fechaController = TextEditingController(
         text: o?.fecha ??
             DateTime.now().toIso8601String().substring(0, 10));
@@ -60,6 +62,7 @@ class _ObservacionReclamoFormScreenState
       tipo: _tipo,
       descripcion: _descripcionController.text.trim(),
       fecha: _fechaController.text.trim(),
+      resuelto: _resuelto,
     );
 
     try {
@@ -156,6 +159,24 @@ class _ObservacionReclamoFormScreenState
                   }
                   return null;
                 },
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Icon(
+                    _resuelto ? Icons.check_circle : Icons.radio_button_unchecked,
+                    color: _resuelto ? Colors.green : Colors.grey,
+                  ),
+                  const SizedBox(width: 8),
+                  const Text('Resuelto',
+                      style: TextStyle(fontWeight: FontWeight.w600)),
+                  const Spacer(),
+                  Switch(
+                    value: _resuelto,
+                    activeThumbColor: Colors.green,
+                    onChanged: (v) => setState(() => _resuelto = v),
+                  ),
+                ],
               ),
               const SizedBox(height: 32),
               ElevatedButton(

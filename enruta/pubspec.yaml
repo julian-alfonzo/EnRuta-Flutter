@@ -35,6 +35,12 @@ dependencies:
   path: ^1.9.0
   path_provider: ^2.1.0
   csv: ^6.0.0
+  pdf: ^3.10.0
+  excel: ^4.0.0
+  share_plus: ^10.0.0
+  http: ^1.2.0
+  connectivity_plus: ^6.0.0
+  shared_preferences: ^2.2.0
 
 dev_dependencies:
   flutter_test:
@@ -46,6 +52,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  sqflite_common_ffi: ^2.3.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
