@@ -279,11 +279,11 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
           const SizedBox(height: 8),
           Row(
             children: [
-              Expanded(
+              Flexible(
                 child: TextField(
                   controller: _desdeController,
                   decoration: const InputDecoration(
-                    hintText: 'Desde (YYYY-MM-DD)',
+                    hintText: 'Desde',
                     prefixIcon: Icon(Icons.calendar_today, size: 18),
                     isDense: true,
                   ),
@@ -292,11 +292,11 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
                 ),
               ),
               const SizedBox(width: 8),
-              Expanded(
+              Flexible(
                 child: TextField(
                   controller: _hastaController,
                   decoration: const InputDecoration(
-                    hintText: 'Hasta (YYYY-MM-DD)',
+                    hintText: 'Hasta',
                     prefixIcon: Icon(Icons.calendar_today, size: 18),
                     isDense: true,
                   ),
@@ -305,12 +305,16 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
                 ),
               ),
               const SizedBox(width: 8),
-              ElevatedButton(
-                onPressed: _loading ? null : _buscar,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              SizedBox(
+                width: 72,
+                height: 40,
+                child: ElevatedButton(
+                  onPressed: _loading ? null : _buscar,
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                  ),
+                  child: const Text('Buscar', style: TextStyle(fontSize: 12)),
                 ),
-                child: const Text('Buscar'),
               ),
             ],
           ),
