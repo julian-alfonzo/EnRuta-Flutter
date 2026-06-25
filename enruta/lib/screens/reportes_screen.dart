@@ -184,7 +184,7 @@ class _ReportesScreenState extends State<ReportesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Reportes'),
+        title: const Text('Estadísticas'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

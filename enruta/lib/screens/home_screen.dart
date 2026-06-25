@@ -154,7 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   _MenuCard(
                     icon: Icons.assessment,
-                    label: 'Reportes',
+                    label: 'Estadísticas',
                     subtitle: 'Alcoholemia y agentes',
                     color: const Color(0xFF7B1FA2),
                     onTap: () {
