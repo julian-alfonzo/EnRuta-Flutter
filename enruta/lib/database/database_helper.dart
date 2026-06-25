@@ -379,7 +379,7 @@ class DatabaseHelper {
       String desde, String hasta) async {
     final db = await database;
     return await db.rawQuery('''
-      SELECT c.*, a.legajo, a.apellido_nombre
+      SELECT c.*, a.legajo, a.apellido_nombre, a.dependencia, a.cargo, a.turno
       FROM controles_alcoholemia c
       JOIN agentes a ON c.agente_id = a.id
       WHERE c.fecha BETWEEN ? AND ?

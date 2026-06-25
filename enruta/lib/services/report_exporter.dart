@@ -76,6 +76,9 @@ class ReportExporter {
               headers: [
                 'Agente',
                 'Legajo',
+                'Dependencia',
+                'Cargo',
+                'Turno',
                 'Fecha',
                 'Resultado',
                 'Graduacion',
@@ -86,6 +89,9 @@ class ReportExporter {
                 return [
                   d['apellido_nombre']?.toString() ?? '',
                   d['legajo']?.toString() ?? '',
+                  d['dependencia']?.toString() ?? '',
+                  d['cargo']?.toString() ?? '',
+                  d['turno']?.toString() ?? '',
                   d['fecha']?.toString() ?? '',
                   d['resultado']?.toString() ?? '',
                   d['graduacion'] != null
@@ -122,7 +128,8 @@ class ReportExporter {
     sheet.appendRow(_row([]));
 
     sheet.appendRow(_row([
-      'Agente', 'Legajo', 'Fecha', 'Resultado', 'Graduacion (g/l)',
+      'Agente', 'Legajo', 'Dependencia', 'Cargo', 'Turno',
+      'Fecha', 'Resultado', 'Graduacion (g/l)',
       'Servicio / Extra', 'Observacion',
     ]));
 
@@ -130,6 +137,9 @@ class ReportExporter {
       sheet.appendRow(_row([
         d['apellido_nombre']?.toString() ?? '',
         d['legajo']?.toString() ?? '',
+        d['dependencia']?.toString() ?? '',
+        d['cargo']?.toString() ?? '',
+        d['turno']?.toString() ?? '',
         d['fecha']?.toString() ?? '',
         d['resultado']?.toString() ?? '',
         d['graduacion']?.toString() ?? '',
