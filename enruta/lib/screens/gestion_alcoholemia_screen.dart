@@ -522,49 +522,49 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
           const SizedBox(height: 8),
           Row(
             children: [
-              Flexible(
+              Expanded(
                 child: TextField(
                   controller: _dependenciaController,
                   decoration: const InputDecoration(
                     hintText: 'Dependencia',
                     isDense: true,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                   ),
-                  style: const TextStyle(fontSize: 12),
+                  style: const TextStyle(fontSize: 11),
                   onSubmitted: (_) => _buscar(),
                 ),
               ),
-              const SizedBox(width: 6),
-              Flexible(
+              const SizedBox(width: 4),
+              Expanded(
                 child: TextField(
                   controller: _cargoController,
                   decoration: const InputDecoration(
                     hintText: 'Cargo',
                     isDense: true,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                   ),
-                  style: const TextStyle(fontSize: 12),
+                  style: const TextStyle(fontSize: 11),
                   onSubmitted: (_) => _buscar(),
                 ),
               ),
-              const SizedBox(width: 6),
+              const SizedBox(width: 4),
               SizedBox(
-                width: 100,
+                width: 90,
                 child: DropdownButtonFormField<String>(
                   value: _turno.isEmpty ? null : _turno,
                   decoration: const InputDecoration(
                     hintText: 'Turno',
                     isDense: true,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
                   ),
-                  style: const TextStyle(fontSize: 12),
+                  style: const TextStyle(fontSize: 11),
                   items: const [
-                    DropdownMenuItem(value: '', child: Text('Todos', style: TextStyle(fontSize: 12))),
-                    DropdownMenuItem(value: 'ROTATIVO', child: Text('ROTATIVO', style: TextStyle(fontSize: 12))),
-                    DropdownMenuItem(value: 'MAÑANA', child: Text('MAÑANA', style: TextStyle(fontSize: 12))),
-                    DropdownMenuItem(value: 'TARDE', child: Text('TARDE', style: TextStyle(fontSize: 12))),
-                    DropdownMenuItem(value: 'NOCHE', child: Text('NOCHE', style: TextStyle(fontSize: 12))),
-                    DropdownMenuItem(value: 'FIJO', child: Text('FIJO', style: TextStyle(fontSize: 12))),
+                    DropdownMenuItem(value: '', child: Text('Todos', style: TextStyle(fontSize: 11))),
+                    DropdownMenuItem(value: 'ROTATIVO', child: Text('ROTATIVO', style: TextStyle(fontSize: 11))),
+                    DropdownMenuItem(value: 'MAÑANA', child: Text('MAÑANA', style: TextStyle(fontSize: 11))),
+                    DropdownMenuItem(value: 'TARDE', child: Text('TARDE', style: TextStyle(fontSize: 11))),
+                    DropdownMenuItem(value: 'NOCHE', child: Text('NOCHE', style: TextStyle(fontSize: 11))),
+                    DropdownMenuItem(value: 'FIJO', child: Text('FIJO', style: TextStyle(fontSize: 11))),
                   ],
                   onChanged: (v) {
                     setState(() => _turno = v ?? '');
