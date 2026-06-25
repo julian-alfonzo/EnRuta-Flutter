@@ -6,6 +6,7 @@ import '../database/database_helper.dart';
 import '../models/agente.dart';
 import '../models/control_alcoholemia.dart';
 import '../models/observacion_reclamo.dart';
+import '../services/api_client.dart';
 import 'agente_form_screen.dart';
 import 'control_alcoholemia_form_screen.dart';
 import 'observacion_reclamo_form_screen.dart';
@@ -45,15 +46,35 @@ class _AgenteDetailScreenState extends State<AgenteDetailScreen>
   Future<void> _cargarDatos() async {
     setState(() => _loading = true);
     final agente = await _db.getAgenteById(_agente.id!);
-    final controles = await _db.getControlesByAgente(_agente.id!);
-    final observaciones =
-        await _db.getObservacionesReclamosByAgente(_agente.id!);
-    setState(() {
-      if (agente != null) _agente = agente;
+    if (agente != null) _agente = agente;
+
+    try {
+      final api = AppServices.instance.apiClient;
+      final result = await Future.wait([
+        api.getAlcoholemiasByAgente(_agente.id!),
+        api.getObservacionesByAgente(_agente.id!),
+      ]);
+      final controlesData = result[0]['data'] as List<dynamic>? ?? [];
+      final observacionesData = result[1]['data'] as List<dynamic>? ?? [];
+      _controles = controlesData
+          .map((j) => ControlAlcoholemia.fromApiJson(j as Map<String, dynamic>))
+          .toList();
+      _observaciones = observacionesData
+          .map((j) => ObservacionReclamo.fromApiJson(j as Map<String, dynamic>))
+          .toList();
+    } on ApiException {
+      final controles = await _db.getControlesByAgente(_agente.id!);
+      final observaciones = await _db.getObservacionesReclamosByAgente(_agente.id!);
       _controles = controles;
       _observaciones = observaciones;
-      _loading = false;
-    });
+    } catch (_) {
+      final controles = await _db.getControlesByAgente(_agente.id!);
+      final observaciones = await _db.getObservacionesReclamosByAgente(_agente.id!);
+      _controles = controles;
+      _observaciones = observaciones;
+    }
+
+    setState(() => _loading = false);
   }
 
   Future<void> _irAEditarAgente() async {
