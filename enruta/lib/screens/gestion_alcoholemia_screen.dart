@@ -52,8 +52,10 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
         hasta: hasta.isNotEmpty ? hasta : null,
       );
       final data = response['data'] as List<dynamic>? ?? [];
+      final resultados = data.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+      await _enriquecerConAgenteLocal(resultados);
       setState(() {
-        _resultados = data.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+        _resultados = resultados;
         _loading = false;
       });
     } on ApiException {
@@ -85,6 +87,27 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
       _loading = false;
       _offline = true;
     });
+  }
+
+  Future<void> _enriquecerConAgenteLocal(List<Map<String, dynamic>> resultados) async {
+    for (final item in resultados) {
+      final tieneNombre = (item['apellidoNombre'] ?? item['apellido_nombre']) != null;
+      final tieneLegajo = item['legajo'] != null;
+      if (tieneNombre && tieneLegajo) continue;
+
+      final agenteId = item['agenteId'] as int? ?? item['agente_id'] as int?;
+      if (agenteId == null) continue;
+
+      final agente = await _db.getAgenteById(agenteId);
+      if (agente != null) {
+        if (!tieneNombre) {
+          item['apellido_nombre'] = agente.apellidoNombre;
+        }
+        if (!tieneLegajo) {
+          item['legajo'] = agente.legajo;
+        }
+      }
+    }
   }
 
   Future<void> _seleccionarFecha(bool esDesde) async {
