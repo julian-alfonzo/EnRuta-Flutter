@@ -154,10 +154,10 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
     }
   }
 
-  Future<void> _borrarTodosDelDia() async {
+  Future<void> _borrarTodosDelRango() async {
     final desde = _desdeController.text.trim();
     final hasta = _hastaController.text.trim();
-    if (desde.isEmpty || hasta.isEmpty || desde != hasta) return;
+    if (desde.isEmpty || hasta.isEmpty) return;
     if (_resultados.isEmpty) return;
 
     if (!_confirmandoBorrado) {
@@ -166,7 +166,7 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
     }
 
     try {
-      await AppServices.instance.apiClient.deleteAlcoholemiasByFecha(desde);
+      await AppServices.instance.apiClient.deleteAlcoholemiasByRango(desde, hasta);
       setState(() {
         _confirmandoBorrado = false;
         _resultados = [];
@@ -187,7 +187,13 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
   bool get _puedeBorrarTodo {
     final desde = _desdeController.text.trim();
     final hasta = _hastaController.text.trim();
-    return desde.isNotEmpty && hasta.isNotEmpty && desde == hasta && _resultados.isNotEmpty;
+    return desde.isNotEmpty && hasta.isNotEmpty && _resultados.isNotEmpty;
+  }
+
+  String get _rangoEtiqueta {
+    final desde = _desdeController.text.trim();
+    final hasta = _hastaController.text.trim();
+    return desde == hasta ? desde : '$desde a $hasta';
   }
 
   Future<void> _eliminarControl(Map<String, dynamic> item) async {
@@ -289,7 +295,7 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
                             SizedBox(
                               height: 30,
                               child: ElevatedButton(
-                                onPressed: _borrarTodosDelDia,
+                            onPressed: _borrarTodosDelRango,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.red,
                                   foregroundColor: Colors.white,
@@ -317,10 +323,10 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
                       : SizedBox(
                           height: 30,
                           child: ElevatedButton.icon(
-                            onPressed: _borrarTodosDelDia,
+                                onPressed: _borrarTodosDelRango,
                             icon: const Icon(Icons.delete_sweep, size: 16),
                             label: Text(
-                              'Borrar todos del ${_desdeController.text.trim()}',
+                              'Borrar todos ($_rangoEtiqueta)',
                               style: const TextStyle(fontSize: 11),
                             ),
                             style: ElevatedButton.styleFrom(

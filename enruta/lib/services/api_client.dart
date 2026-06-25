@@ -299,6 +299,10 @@ class ApiClient {
     return _delete('/alcoholemias', {'fecha': fecha});
   }
 
+  Future<Map<String, dynamic>> deleteAlcoholemiasByRango(String desde, String hasta) async {
+    return _delete('/alcoholemias', {'desde': desde, 'hasta': hasta});
+  }
+
   // ── Observaciones / Reclamos ──
 
   Future<Map<String, dynamic>> getObservacionesByAgente(int agenteId) async {
