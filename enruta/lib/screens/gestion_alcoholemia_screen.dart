@@ -270,72 +270,74 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
             child: Row(
               children: [
-                Text(
-                  '${_resultados.length} controles encontrados',
-                  style: TextStyle(
-                    color: AppColors.onSurface.withValues(alpha: 0.5),
-                    fontSize: 12,
+                Flexible(
+                  child: Text(
+                    '${_resultados.length} controles encontrados',
+                    style: TextStyle(
+                      color: AppColors.onSurface.withValues(alpha: 0.5),
+                      fontSize: 12,
+                    ),
                   ),
                 ),
-                const Spacer(),
-                if (_puedeBorrarTodo)
-                  _confirmandoBorrado
-                      ? Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              '¿Borrar ${_resultados.length}?',
-                              style: const TextStyle(
-                                color: Colors.red,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            SizedBox(
-                              height: 30,
-                              child: ElevatedButton(
-                            onPressed: _borrarTodosDelRango,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red,
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                                  textStyle: const TextStyle(fontSize: 11),
+                if (_puedeBorrarTodo) ...[
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: _confirmandoBorrado
+                        ? Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text(
+                                '¿Seguro?',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
                                 ),
-                                child: const Text('Sí, borrar'),
                               ),
-                            ),
-                            const SizedBox(width: 4),
-                            SizedBox(
-                              height: 30,
-                              child: OutlinedButton(
-                                onPressed: () =>
-                                    setState(() => _confirmandoBorrado = false),
-                                style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                                  textStyle: const TextStyle(fontSize: 11),
+                              const SizedBox(width: 4),
+                              SizedBox(
+                                height: 30,
+                                child: ElevatedButton(
+                                  onPressed: _borrarTodosDelRango,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                                    textStyle: const TextStyle(fontSize: 11),
+                                  ),
+                                  child: const Text('Sí, borrar'),
                                 ),
-                                child: const Text('No'),
                               ),
-                            ),
-                          ],
-                        )
-                      : SizedBox(
-                          height: 30,
-                          child: ElevatedButton.icon(
-                                onPressed: _borrarTodosDelRango,
-                            icon: const Icon(Icons.delete_sweep, size: 16),
-                            label: Text(
-                              'Borrar todos ($_rangoEtiqueta)',
-                              style: const TextStyle(fontSize: 11),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              const SizedBox(width: 4),
+                              SizedBox(
+                                height: 30,
+                                child: OutlinedButton(
+                                  onPressed: () =>
+                                      setState(() => _confirmandoBorrado = false),
+                                  style: OutlinedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6),
+                                    textStyle: const TextStyle(fontSize: 11),
+                                  ),
+                                  child: const Text('No'),
+                                ),
+                              ),
+                            ],
+                          )
+                        : SizedBox(
+                            height: 30,
+                            child: ElevatedButton.icon(
+                              onPressed: _borrarTodosDelRango,
+                              icon: const Icon(Icons.delete_sweep, size: 16),
+                              label: const Text('Borrar', style: TextStyle(fontSize: 11)),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(horizontal: 10),
+                              ),
                             ),
                           ),
-                        ),
+                  ),
+                ],
               ],
             ),
           ),
