@@ -25,6 +25,7 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
   List<Map<String, dynamic>> _resultados = [];
   bool _loading = false;
   bool _offline = false;
+  bool _confirmandoBorrado = false;
 
   @override
   void dispose() {
@@ -153,6 +154,42 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
     }
   }
 
+  Future<void> _borrarTodosDelDia() async {
+    final desde = _desdeController.text.trim();
+    final hasta = _hastaController.text.trim();
+    if (desde.isEmpty || hasta.isEmpty || desde != hasta) return;
+    if (_resultados.isEmpty) return;
+
+    if (!_confirmandoBorrado) {
+      setState(() => _confirmandoBorrado = true);
+      return;
+    }
+
+    try {
+      await AppServices.instance.apiClient.deleteAlcoholemiasByFecha(desde);
+      setState(() {
+        _confirmandoBorrado = false;
+        _resultados = [];
+      });
+    } on Exception catch (e) {
+      setState(() => _confirmandoBorrado = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString().replaceFirst('Exception: ', '')}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  bool get _puedeBorrarTodo {
+    final desde = _desdeController.text.trim();
+    final hasta = _hastaController.text.trim();
+    return desde.isNotEmpty && hasta.isNotEmpty && desde == hasta && _resultados.isNotEmpty;
+  }
+
   Future<void> _eliminarControl(Map<String, dynamic> item) async {
     final id = item['id'] as int;
     final nombre = item['apellidoNombre'] as String? ??
@@ -234,6 +271,65 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
                     fontSize: 12,
                   ),
                 ),
+                const Spacer(),
+                if (_puedeBorrarTodo)
+                  _confirmandoBorrado
+                      ? Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '¿Borrar ${_resultados.length}?',
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            SizedBox(
+                              height: 30,
+                              child: ElevatedButton(
+                                onPressed: _borrarTodosDelDia,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                                  textStyle: const TextStyle(fontSize: 11),
+                                ),
+                                child: const Text('Sí, borrar'),
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            SizedBox(
+                              height: 30,
+                              child: OutlinedButton(
+                                onPressed: () =>
+                                    setState(() => _confirmandoBorrado = false),
+                                style: OutlinedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                                  textStyle: const TextStyle(fontSize: 11),
+                                ),
+                                child: const Text('No'),
+                              ),
+                            ),
+                          ],
+                        )
+                      : SizedBox(
+                          height: 30,
+                          child: ElevatedButton.icon(
+                            onPressed: _borrarTodosDelDia,
+                            icon: const Icon(Icons.delete_sweep, size: 16),
+                            label: Text(
+                              'Borrar todos del ${_desdeController.text.trim()}',
+                              style: const TextStyle(fontSize: 11),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                            ),
+                          ),
+                        ),
               ],
             ),
           ),

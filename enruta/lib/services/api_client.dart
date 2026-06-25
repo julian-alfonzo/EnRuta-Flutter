@@ -161,10 +161,10 @@ class ApiClient {
     }
   }
 
-  Future<Map<String, dynamic>> _delete(String path) async {
+  Future<Map<String, dynamic>> _delete(String path, [Map<String, String>? queryParams]) async {
     try {
       final response = await _client
-          .delete(_uri(path), headers: _headers)
+          .delete(_uri(path, queryParams), headers: _headers)
           .timeout(_timeout);
       return await _handleResponse(response);
     } catch (e) {
@@ -293,6 +293,10 @@ class ApiClient {
 
   Future<Map<String, dynamic>> deleteAlcoholemia(int id) async {
     return _delete('/alcoholemias/$id');
+  }
+
+  Future<Map<String, dynamic>> deleteAlcoholemiasByFecha(String fecha) async {
+    return _delete('/alcoholemias', {'fecha': fecha});
   }
 
   // ── Observaciones / Reclamos ──
