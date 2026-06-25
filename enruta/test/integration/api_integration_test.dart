@@ -45,7 +45,7 @@ void main() {
       }
     });
 
-    test('GET /agentes - con filtros dependencia/cargo/turno', () async {
+    test('GET /agentes - con filtros dependencia/cargo', () async {
       final login = await api.login('admin', 'admin123');
       final token = (login['data'] as Map)['accessToken'] as String;
       api.setTokens(accessToken: token, refreshToken: '');
@@ -54,16 +54,6 @@ void main() {
       final data = response['data'] as List;
       expect(data, isNotNull);
       expect(response['meta'], isNotNull);
-    });
-
-    test('GET /agentes - con filtro turno', () async {
-      final login = await api.login('admin', 'admin123');
-      final token = (login['data'] as Map)['accessToken'] as String;
-      api.setTokens(accessToken: token, refreshToken: '');
-
-      final response = await api.getAgentes(turno: 'ROTATIVO');
-      final data = response['data'] as List;
-      expect(data, isNotNull);
     });
 
     test('GET /agentes/:id - obtener uno', () async {
@@ -101,7 +91,6 @@ void main() {
         'apellidoNombre': 'Test $ts',
         'dependencia': 'Test Dept',
         'cargo': 'Test Cargo',
-        'turno': 'ROTATIVO',
       });
       final created = create['data'] as Map<String, dynamic>;
       final newId = created['id'] as int;
@@ -150,12 +139,12 @@ void main() {
       expect(data, isNotNull);
     });
 
-    test('GET /alcoholemias - buscar con filtro turno', () async {
+    test('GET /alcoholemias - buscar con filtro dependencia', () async {
       final login = await api.login('admin', 'admin123');
       final token = (login['data'] as Map)['accessToken'] as String;
       api.setTokens(accessToken: token, refreshToken: '');
 
-      final response = await api.getAlcoholemias(turno: 'ROTATIVO');
+      final response = await api.getAlcoholemias(dependencia: 'Transito');
       final data = response['data'] as List?;
       expect(data, isNotNull);
     });

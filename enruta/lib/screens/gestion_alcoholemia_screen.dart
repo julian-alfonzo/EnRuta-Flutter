@@ -30,7 +30,6 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
   bool _offline = false;
   bool _confirmandoBorrado = false;
   bool _exportando = false;
-  String _turno = '';
 
   @override
   void dispose() {
@@ -62,7 +61,6 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
         hasta: hasta.isNotEmpty ? hasta : null,
         dependencia: dependencia.isNotEmpty ? dependencia : null,
         cargo: cargo.isNotEmpty ? cargo : null,
-        turno: _turno.isNotEmpty ? _turno : null,
       );
       final data = response['data'] as List<dynamic>? ?? [];
       final resultados = data.map((e) => Map<String, dynamic>.from(e as Map)).toList();
@@ -534,7 +532,7 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
                   onSubmitted: (_) => _buscar(),
                 ),
               ),
-              const SizedBox(width: 4),
+                const SizedBox(width: 4),
               Expanded(
                 child: TextField(
                   controller: _cargoController,
@@ -545,31 +543,6 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
                   ),
                   style: const TextStyle(fontSize: 11),
                   onSubmitted: (_) => _buscar(),
-                ),
-              ),
-              const SizedBox(width: 4),
-              SizedBox(
-                width: 90,
-                child: DropdownButtonFormField<String>(
-                  value: _turno.isEmpty ? null : _turno,
-                  decoration: const InputDecoration(
-                    hintText: 'Turno',
-                    isDense: true,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-                  ),
-                  style: const TextStyle(fontSize: 11),
-                  items: const [
-                    DropdownMenuItem(value: '', child: Text('Todos', style: TextStyle(fontSize: 11))),
-                    DropdownMenuItem(value: 'ROTATIVO', child: Text('ROTATIVO', style: TextStyle(fontSize: 11))),
-                    DropdownMenuItem(value: 'MAÑANA', child: Text('MAÑANA', style: TextStyle(fontSize: 11))),
-                    DropdownMenuItem(value: 'TARDE', child: Text('TARDE', style: TextStyle(fontSize: 11))),
-                    DropdownMenuItem(value: 'NOCHE', child: Text('NOCHE', style: TextStyle(fontSize: 11))),
-                    DropdownMenuItem(value: 'FIJO', child: Text('FIJO', style: TextStyle(fontSize: 11))),
-                  ],
-                  onChanged: (v) {
-                    setState(() => _turno = v ?? '');
-                    _buscar();
-                  },
                 ),
               ),
             ],
