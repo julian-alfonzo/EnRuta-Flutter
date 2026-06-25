@@ -214,6 +214,9 @@ class ApiClient {
 
   Future<Map<String, dynamic>> getAgentes({
     String? search,
+    String? dependencia,
+    String? cargo,
+    String? turno,
     int page = 1,
     int limit = 20,
   }) async {
@@ -222,6 +225,9 @@ class ApiClient {
       'limit': limit.toString(),
     };
     if (search != null && search.isNotEmpty) params['search'] = search;
+    if (dependencia != null && dependencia.isNotEmpty) params['dependencia'] = dependencia;
+    if (cargo != null && cargo.isNotEmpty) params['cargo'] = cargo;
+    if (turno != null && turno.isNotEmpty) params['turno'] = turno;
     return _get('/agentes', params);
   }
 
@@ -257,6 +263,9 @@ class ApiClient {
     String? desde,
     String? hasta,
     String? search,
+    String? dependencia,
+    String? cargo,
+    String? turno,
     int page = 1,
     int limit = 50,
   }) async {
@@ -268,6 +277,9 @@ class ApiClient {
     if (desde != null) params['desde'] = desde;
     if (hasta != null) params['hasta'] = hasta;
     if (search != null && search.isNotEmpty) params['search'] = search;
+    if (dependencia != null && dependencia.isNotEmpty) params['dependencia'] = dependencia;
+    if (cargo != null && cargo.isNotEmpty) params['cargo'] = cargo;
+    if (turno != null && turno.isNotEmpty) params['turno'] = turno;
     return _get('/alcoholemias', params);
   }
 

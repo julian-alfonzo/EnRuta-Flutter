@@ -21,17 +21,22 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
   final _searchController = TextEditingController();
   final _desdeController = TextEditingController();
   final _hastaController = TextEditingController();
+  final _dependenciaController = TextEditingController();
+  final _cargoController = TextEditingController();
 
   List<Map<String, dynamic>> _resultados = [];
   bool _loading = false;
   bool _offline = false;
   bool _confirmandoBorrado = false;
+  String _turno = '';
 
   @override
   void dispose() {
     _searchController.dispose();
     _desdeController.dispose();
     _hastaController.dispose();
+    _dependenciaController.dispose();
+    _cargoController.dispose();
     super.dispose();
   }
 
@@ -39,6 +44,8 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
     final search = _searchController.text.trim();
     final desde = _desdeController.text.trim();
     final hasta = _hastaController.text.trim();
+    final dependencia = _dependenciaController.text.trim();
+    final cargo = _cargoController.text.trim();
 
     setState(() {
       _loading = true;
@@ -51,6 +58,9 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
         search: search.isNotEmpty ? search : null,
         desde: desde.isNotEmpty ? desde : null,
         hasta: hasta.isNotEmpty ? hasta : null,
+        dependencia: dependencia.isNotEmpty ? dependencia : null,
+        cargo: cargo.isNotEmpty ? cargo : null,
+        turno: _turno.isNotEmpty ? _turno : null,
       );
       final data = response['data'] as List<dynamic>? ?? [];
       final resultados = data.map((e) => Map<String, dynamic>.from(e as Map)).toList();
@@ -441,6 +451,61 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
                     padding: EdgeInsets.zero,
                   ),
                   child: const Text('Buscar', style: TextStyle(fontSize: 12)),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Flexible(
+                child: TextField(
+                  controller: _dependenciaController,
+                  decoration: const InputDecoration(
+                    hintText: 'Dependencia',
+                    isDense: true,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  ),
+                  style: const TextStyle(fontSize: 12),
+                  onSubmitted: (_) => _buscar(),
+                ),
+              ),
+              const SizedBox(width: 6),
+              Flexible(
+                child: TextField(
+                  controller: _cargoController,
+                  decoration: const InputDecoration(
+                    hintText: 'Cargo',
+                    isDense: true,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  ),
+                  style: const TextStyle(fontSize: 12),
+                  onSubmitted: (_) => _buscar(),
+                ),
+              ),
+              const SizedBox(width: 6),
+              SizedBox(
+                width: 100,
+                child: DropdownButtonFormField<String>(
+                  value: _turno.isEmpty ? null : _turno,
+                  decoration: const InputDecoration(
+                    hintText: 'Turno',
+                    isDense: true,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                  ),
+                  style: const TextStyle(fontSize: 12),
+                  items: const [
+                    DropdownMenuItem(value: '', child: Text('Todos', style: TextStyle(fontSize: 12))),
+                    DropdownMenuItem(value: 'ROTATIVO', child: Text('ROTATIVO', style: TextStyle(fontSize: 12))),
+                    DropdownMenuItem(value: 'MAÑANA', child: Text('MAÑANA', style: TextStyle(fontSize: 12))),
+                    DropdownMenuItem(value: 'TARDE', child: Text('TARDE', style: TextStyle(fontSize: 12))),
+                    DropdownMenuItem(value: 'NOCHE', child: Text('NOCHE', style: TextStyle(fontSize: 12))),
+                    DropdownMenuItem(value: 'FIJO', child: Text('FIJO', style: TextStyle(fontSize: 12))),
+                  ],
+                  onChanged: (v) {
+                    setState(() => _turno = v ?? '');
+                    _buscar();
+                  },
                 ),
               ),
             ],
