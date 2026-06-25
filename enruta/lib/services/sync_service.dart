@@ -299,8 +299,7 @@ class SyncService {
     final local = await _db.getAgenteByLegajo(legajo);
 
     if (local == null) {
-      await _db.insertAgente(
-          Agente.fromMap(_fromServerAgente(serverMap)));
+      await _db.insertAgente(Agente.fromApiJson(serverMap));
       return;
     }
 
@@ -308,20 +307,20 @@ class SyncService {
         await _db.hasPendingSyncForRecord('agente', local.id!);
     if (!hasPending) {
       await _db.updateAgente(
-          Agente.fromMap({..._fromServerAgente(serverMap), 'id': local.id}));
+          Agente.fromApiJson({...serverMap, 'id': local.id}));
       return;
     }
 
     final localUpdatedAt = local.updatedAt;
     if (serverUpdatedAt == null || localUpdatedAt == null) {
       await _db.updateAgente(
-          Agente.fromMap({..._fromServerAgente(serverMap), 'id': local.id}));
+          Agente.fromApiJson({...serverMap, 'id': local.id}));
       return;
     }
 
     if (serverUpdatedAt.compareTo(localUpdatedAt) > 0) {
       await _db.updateAgente(
-          Agente.fromMap({..._fromServerAgente(serverMap), 'id': local.id}));
+          Agente.fromApiJson({...serverMap, 'id': local.id}));
     }
   }
 
@@ -333,30 +332,14 @@ class SyncService {
         final hasPending = await _db.hasPendingSyncForRecord(
             'alcoholemia', serverId);
         if (!hasPending) {
-          await _db.updateControl(ControlAlcoholemia(
-            id: serverId,
-            agenteId: serverMap['agenteId'] as int,
-            fecha: serverMap['fecha'] as String,
-            resultado: serverMap['resultado'] as String,
-            graduacion: (serverMap['graduacion'] as num?)?.toDouble(),
-            servicioExtra: serverMap['servicioExtra'] as String?,
-            observacion: serverMap['observacion'] as String?,
-            createdAt: serverMap['createdAt'] as String?,
-          ));
+          await _db.updateControl(
+              ControlAlcoholemia.fromApiJson(serverMap));
         }
         return;
       }
     }
-    await _db.insertControl(ControlAlcoholemia(
-      id: serverMap['id'] as int?,
-      agenteId: serverMap['agenteId'] as int,
-      fecha: serverMap['fecha'] as String,
-      resultado: serverMap['resultado'] as String,
-      graduacion: (serverMap['graduacion'] as num?)?.toDouble(),
-      servicioExtra: serverMap['servicioExtra'] as String?,
-      observacion: serverMap['observacion'] as String?,
-      createdAt: serverMap['createdAt'] as String?,
-    ));
+    await _db.insertControl(
+        ControlAlcoholemia.fromApiJson(serverMap));
   }
 
   Future<void> _mergeObservacion(Map<String, dynamic> serverMap) async {
@@ -368,28 +351,14 @@ class SyncService {
         final hasPending = await _db.hasPendingSyncForRecord(
             'observacion', serverId);
         if (!hasPending) {
-          await _db.updateObservacionReclamo(ObservacionReclamo(
-            id: serverId,
-            agenteId: serverMap['agenteId'] as int,
-            tipo: serverMap['tipo'] as String,
-            descripcion: serverMap['descripcion'] as String,
-            fecha: serverMap['fecha'] as String,
-            resuelto: serverMap['resuelto'] == true,
-            createdAt: serverMap['createdAt'] as String?,
-          ));
+          await _db.updateObservacionReclamo(
+              ObservacionReclamo.fromApiJson(serverMap));
         }
         return;
       }
     }
-    await _db.insertObservacionReclamo(ObservacionReclamo(
-      id: serverMap['id'] as int?,
-      agenteId: serverMap['agenteId'] as int,
-      tipo: serverMap['tipo'] as String,
-      descripcion: serverMap['descripcion'] as String,
-      fecha: serverMap['fecha'] as String,
-      resuelto: serverMap['resuelto'] == true,
-      createdAt: serverMap['createdAt'] as String?,
-    ));
+    await _db.insertObservacionReclamo(
+        ObservacionReclamo.fromApiJson(serverMap));
   }
 
   Future<void> _deleteLocalIfNotPending(String entidad, int id) async {
@@ -403,20 +372,6 @@ class SyncService {
       case 'observacion':
         await _db.deleteObservacionReclamo(id);
     }
-  }
-
-  Map<String, dynamic> _fromServerAgente(Map<String, dynamic> map) {
-    return {
-      'id': map['id'] as int?,
-      'legajo': map['legajo'] as String,
-      'apellido_nombre': map['apellidoNombre'] as String,
-      'fecha_ingreso': map['fechaIngreso'] as String?,
-      'dependencia': map['dependencia'] as String?,
-      'cargo': map['cargo'] as String?,
-      'turno': map['turno'] as String?,
-      'created_at': map['createdAt'] as String?,
-      'updated_at': map['updatedAt'] as String?,
-    };
   }
 
   Future<int> get pendingCount => _db.getPendingSyncCount();

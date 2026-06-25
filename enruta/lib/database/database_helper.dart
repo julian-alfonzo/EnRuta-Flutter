@@ -213,6 +213,16 @@ class DatabaseHelper {
 
   Future<int> deleteAgente(int id) async {
     final db = await database;
+    final controles = Sqflite.firstIntValue(await db.rawQuery(
+        'SELECT COUNT(*) FROM controles_alcoholemia WHERE agente_id = ?',
+        [id]));
+    final observaciones = Sqflite.firstIntValue(await db.rawQuery(
+        'SELECT COUNT(*) FROM observaciones_reclamos WHERE agente_id = ?',
+        [id]));
+    if ((controles ?? 0) > 0 || (observaciones ?? 0) > 0) {
+      throw Exception(
+          'El agente tiene $controles control(es) y $observaciones observación(es) asociada(s)');
+    }
     return await db.delete('agentes', where: 'id = ?', whereArgs: [id]);
   }
 

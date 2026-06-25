@@ -66,8 +66,19 @@ class _AgentesScreenState extends State<AgentesScreen> {
     );
 
     if (confirmado == true) {
-      await AppServices.instance.apiService.deleteAgente(agente.id!);
-      _cargarAgentes();
+      try {
+        await AppServices.instance.apiService.deleteAgente(agente.id!);
+        _cargarAgentes();
+      } on Exception catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(e.toString().replaceFirst('Exception: ', '')),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
     }
   }
 

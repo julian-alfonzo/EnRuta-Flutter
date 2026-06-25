@@ -197,12 +197,15 @@ void main() {
       expect(await db.getControlesByAgente(agenteId), isEmpty);
     });
 
-    test('deleteAgente cascades controls', () async {
+    test('deleteAgente rejects when has dependencias', () async {
       await db.insertControl(ControlAlcoholemia(
         agenteId: agenteId, fecha: '2026-01-01', resultado: 'Negativo',
       ));
-      await db.deleteAgente(agenteId);
-      expect(await db.getControlesByAgente(agenteId), isEmpty);
+      expect(
+        () => db.deleteAgente(agenteId),
+        throwsA(isA<Exception>()),
+      );
+      expect(await db.getControlesByAgente(agenteId), isNotEmpty);
     });
   });
 
@@ -272,13 +275,16 @@ void main() {
       expect(await db.getObservacionesReclamosByAgente(agenteId), isEmpty);
     });
 
-    test('deleteAgente cascades observaciones', () async {
+    test('deleteAgente rejects when has observaciones', () async {
       await db.insertObservacionReclamo(ObservacionReclamo(
         agenteId: agenteId, tipo: 'Observacion',
         descripcion: 'test', fecha: '2026-01-01',
       ));
-      await db.deleteAgente(agenteId);
-      expect(await db.getObservacionesReclamosByAgente(agenteId), isEmpty);
+      expect(
+        () => db.deleteAgente(agenteId),
+        throwsA(isA<Exception>()),
+      );
+      expect(await db.getObservacionesReclamosByAgente(agenteId), isNotEmpty);
     });
   });
 

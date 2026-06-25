@@ -48,13 +48,26 @@ class ControlAlcoholemia {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'agente_id': agenteId,
+      'agenteId': agenteId,
       'fecha': fecha,
       'resultado': resultado,
       'graduacion': graduacion,
-      'servicio_extra': servicioExtra,
+      'servicioExtra': servicioExtra,
       'observacion': observacion,
     };
+  }
+
+  factory ControlAlcoholemia.fromApiJson(Map<String, dynamic> map) {
+    return ControlAlcoholemia(
+      id: map['id'] as int?,
+      agenteId: map['agenteId'] as int,
+      fecha: map['fecha'] as String,
+      resultado: map['resultado'] as String,
+      graduacion: (map['graduacion'] as num?)?.toDouble(),
+      servicioExtra: map['servicioExtra'] as String?,
+      observacion: map['observacion'] as String?,
+      createdAt: map['createdAt'] as String?,
+    );
   }
 
   ControlAlcoholemia copyWith({

@@ -27,7 +27,7 @@ void main() {
       final json = a.toJson();
       expect(json.containsKey('id'), true);
       expect(json.containsKey('legajo'), true);
-      expect(json.containsKey('apellido_nombre'), true);
+      expect(json.containsKey('apellidoNombre'), true);
     });
 
     test('copyWith preserves unchanged', () {
@@ -59,7 +59,7 @@ void main() {
         observacion: 'Test',
       );
       expect(c.toJson()['graduacion'], 1.5);
-      expect(c.toJson()['servicio_extra'], 'Hora extra');
+      expect(c.toJson()['servicioExtra'], 'Hora extra');
     });
   });
 

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import '../database/database_helper.dart';
 import '../models/agente.dart';
 import '../models/control_alcoholemia.dart';
@@ -70,60 +68,15 @@ class ApiService {
   Future<List<Agente>> fetchAgentes({String? search, int page = 1}) async {
     final response = await _api.getAgentes(search: search, page: page);
     final data = response['data'] as List<dynamic>;
-    return data.map((json) => Agente.fromMap(_fromApiAgente(json))).toList();
-  }
-
-  Map<String, dynamic> _fromApiAgente(dynamic json) {
-    final map = json is Map<String, dynamic> ? json : jsonDecode(jsonEncode(json)) as Map<String, dynamic>;
-    return {
-      'id': map['id'] as int?,
-      'legajo': map['legajo'] as String,
-      'apellido_nombre': map['apellidoNombre'] as String,
-      'fecha_ingreso': map['fechaIngreso'] as String?,
-      'dependencia': map['dependencia'] as String?,
-      'cargo': map['cargo'] as String?,
-      'turno': map['turno'] as String?,
-      'created_at': map['createdAt'] as String?,
-      'updated_at': map['updatedAt'] as String?,
-    };
-  }
-
-  Map<String, dynamic> _toApiAgente(Agente a) {
-    return {
-      'legajo': a.legajo,
-      'apellidoNombre': a.apellidoNombre,
-      'fechaIngreso': a.fechaIngreso,
-      'dependencia': a.dependencia,
-      'cargo': a.cargo,
-      'turno': a.turno,
-    };
-  }
-
-  Map<String, dynamic> _toApiAlcoholemia(ControlAlcoholemia c) {
-    return {
-      'fecha': c.fecha,
-      'resultado': c.resultado,
-      'graduacion': c.graduacion,
-      'servicioExtra': c.servicioExtra,
-      'observacion': c.observacion,
-    };
-  }
-
-  Map<String, dynamic> _toApiObservacion(ObservacionReclamo o) {
-    return {
-      'tipo': o.tipo,
-      'descripcion': o.descripcion,
-      'fecha': o.fecha,
-      'resuelto': o.resuelto,
-    };
+    return data.map((json) => Agente.fromApiJson(json as Map<String, dynamic>)).toList();
   }
 
   Future<void> createAgenteOnline(Agente agente) async {
-    await _api.createAgente(_toApiAgente(agente));
+    await _api.createAgente(agente.toJson());
   }
 
   Future<void> updateAgenteOnline(Agente agente) async {
-    await _api.updateAgente(agente.id!, _toApiAgente(agente));
+    await _api.updateAgente(agente.id!, agente.toJson());
   }
 
   Future<void> deleteAgenteOnline(int id) async {
@@ -145,11 +98,11 @@ class ApiService {
 
   Future<void> createAlcoholemiaOnline(
       int agenteId, ControlAlcoholemia control) async {
-    await _api.createAlcoholemia(agenteId, _toApiAlcoholemia(control));
+    await _api.createAlcoholemia(agenteId, control.toJson());
   }
 
   Future<void> updateAlcoholemiaOnline(ControlAlcoholemia control) async {
-    await _api.updateAlcoholemia(control.id!, _toApiAlcoholemia(control));
+    await _api.updateAlcoholemia(control.id!, control.toJson());
   }
 
   Future<void> deleteAlcoholemiaOnline(int id) async {
@@ -167,11 +120,11 @@ class ApiService {
 
   Future<void> createObservacionOnline(
       int agenteId, ObservacionReclamo o) async {
-    await _api.createObservacion(agenteId, _toApiObservacion(o));
+    await _api.createObservacion(agenteId, o.toJson());
   }
 
   Future<void> updateObservacionOnline(ObservacionReclamo o) async {
-    await _api.updateObservacion(o.id!, _toApiObservacion(o));
+    await _api.updateObservacion(o.id!, o.toJson());
   }
 
   Future<void> deleteObservacionOnline(int id) async {
@@ -183,10 +136,10 @@ class ApiService {
   Future<int> createAgente(Agente agente) async {
     final localId = await _db.insertAgente(agente);
     try {
-      await _api.createAgente(_toApiAgente(agente));
+      await _api.createAgente(agente.toJson());
     } on ApiException {
       await _sync.enqueue(
-          'agente', 'create', localId, _toApiAgente(agente));
+          'agente', 'create', localId, agente.toJson());
     }
     return localId;
   }
@@ -194,10 +147,10 @@ class ApiService {
   Future<void> updateAgente(Agente agente) async {
     await _db.updateAgente(agente);
     try {
-      await _api.updateAgente(agente.id!, _toApiAgente(agente));
+      await _api.updateAgente(agente.id!, agente.toJson());
     } on ApiException {
       await _sync.enqueue(
-          'agente', 'update', agente.id, _toApiAgente(agente));
+          'agente', 'update', agente.id, agente.toJson());
     }
   }
 
@@ -217,10 +170,10 @@ class ApiService {
     if (serverAgenteId != null) {
       try {
         await _api.createAlcoholemia(
-            serverAgenteId, _toApiAlcoholemia(control));
+            serverAgenteId, control.toJson());
       } on ApiException {
         await _sync.enqueue('alcoholemia', 'create', localId,
-            {..._toApiAlcoholemia(control), 'agenteId': serverAgenteId});
+            {...control.toJson(), 'agenteId': serverAgenteId});
       }
     }
     return localId;
@@ -230,10 +183,10 @@ class ApiService {
     await _db.updateControl(control);
     try {
       await _api.updateAlcoholemia(
-          control.id!, _toApiAlcoholemia(control));
+          control.id!, control.toJson());
     } on ApiException {
       await _sync.enqueue('alcoholemia', 'update', control.id,
-          {..._toApiAlcoholemia(control), 'id': control.id});
+          {...control.toJson(), 'id': control.id});
     }
   }
 
@@ -253,10 +206,10 @@ class ApiService {
     if (serverAgenteId != null) {
       try {
         await _api.createObservacion(
-            serverAgenteId, _toApiObservacion(o));
+            serverAgenteId, o.toJson());
       } on ApiException {
         await _sync.enqueue('observacion', 'create', localId,
-            {..._toApiObservacion(o), 'agenteId': serverAgenteId});
+            {...o.toJson(), 'agenteId': serverAgenteId});
       }
     }
     return localId;
@@ -265,10 +218,10 @@ class ApiService {
   Future<void> updateObservacion(ObservacionReclamo o) async {
     await _db.updateObservacionReclamo(o);
     try {
-      await _api.updateObservacion(o.id!, _toApiObservacion(o));
+      await _api.updateObservacion(o.id!, o.toJson());
     } on ApiException {
       await _sync.enqueue('observacion', 'update', o.id,
-          {..._toApiObservacion(o), 'id': o.id});
+          {...o.toJson(), 'id': o.id});
     }
   }
 

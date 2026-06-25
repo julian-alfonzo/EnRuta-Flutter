@@ -44,12 +44,24 @@ class ObservacionReclamo {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'agente_id': agenteId,
+      'agenteId': agenteId,
       'tipo': tipo,
       'descripcion': descripcion,
       'fecha': fecha,
       'resuelto': resuelto,
     };
+  }
+
+  factory ObservacionReclamo.fromApiJson(Map<String, dynamic> map) {
+    return ObservacionReclamo(
+      id: map['id'] as int?,
+      agenteId: map['agenteId'] as int,
+      tipo: map['tipo'] as String,
+      descripcion: map['descripcion'] as String,
+      fecha: map['fecha'] as String,
+      resuelto: map['resuelto'] == true,
+      createdAt: map['createdAt'] as String?,
+    );
   }
 
   ObservacionReclamo copyWith({

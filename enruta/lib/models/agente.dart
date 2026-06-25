@@ -53,12 +53,26 @@ class Agente {
     return {
       'id': id,
       'legajo': legajo,
-      'apellido_nombre': apellidoNombre,
-      'fecha_ingreso': fechaIngreso,
+      'apellidoNombre': apellidoNombre,
+      'fechaIngreso': fechaIngreso,
       'dependencia': dependencia,
       'cargo': cargo,
       'turno': turno,
     };
+  }
+
+  factory Agente.fromApiJson(Map<String, dynamic> map) {
+    return Agente(
+      id: map['id'] as int?,
+      legajo: map['legajo'] as String,
+      apellidoNombre: map['apellidoNombre'] as String,
+      fechaIngreso: map['fechaIngreso'] as String?,
+      dependencia: map['dependencia'] as String?,
+      cargo: map['cargo'] as String?,
+      turno: map['turno'] as String?,
+      createdAt: map['createdAt'] as String?,
+      updatedAt: map['updatedAt'] as String?,
+    );
   }
 
   Agente copyWith({
