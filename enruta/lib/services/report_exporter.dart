@@ -34,6 +34,10 @@ class ReportExporter {
     return values.map((v) => xls.TextCellValue(v)).toList();
   }
 
+  static String _get(Map<String, dynamic> d, String snake, String camel) {
+    return (d[snake] ?? d[camel])?.toString() ?? '';
+  }
+
   static Future<void> exportAlcoholemiaPdf({
     required BuildContext context,
     required List<Map<String, dynamic>> datos,
@@ -78,7 +82,6 @@ class ReportExporter {
                 'Legajo',
                 'Dependencia',
                 'Cargo',
-                'Turno',
                 'Fecha',
                 'Resultado',
                 'Graduacion',
@@ -87,18 +90,18 @@ class ReportExporter {
               ],
               data: datos.map((d) {
                 return [
-                  d['apellido_nombre']?.toString() ?? '',
-                  d['legajo']?.toString() ?? '',
-                  d['dependencia']?.toString() ?? '',
-                  d['cargo']?.toString() ?? '',
-                  d['turno']?.toString() ?? '',
-                  d['fecha']?.toString() ?? '',
-                  d['resultado']?.toString() ?? '',
+                  _get(d, 'apellido_nombre', 'apellidoNombre'),
+                  _get(d, 'legajo', 'legajo'),
+                  _get(d, 'dependencia', 'dependencia'),
+                  _get(d, 'cargo', 'cargo'),
+                  _get(d, 'turno', 'turno'),
+                  _get(d, 'fecha', 'fecha'),
+                  _get(d, 'resultado', 'resultado'),
                   d['graduacion'] != null
                       ? '${d['graduacion']} g/l'
                       : '-',
-                  d['servicio_extra']?.toString() ?? '',
-                  d['observacion']?.toString() ?? '',
+                  _get(d, 'servicio_extra', 'servicioExtra'),
+                  _get(d, 'observacion', 'observacion'),
                 ];
               }).toList(),
             ),
@@ -128,23 +131,22 @@ class ReportExporter {
     sheet.appendRow(_row([]));
 
     sheet.appendRow(_row([
-      'Agente', 'Legajo', 'Dependencia', 'Cargo', 'Turno',
+      'Agente', 'Legajo', 'Dependencia', 'Cargo',
       'Fecha', 'Resultado', 'Graduacion (g/l)',
       'Servicio / Extra', 'Observacion',
     ]));
 
     for (final d in datos) {
       sheet.appendRow(_row([
-        d['apellido_nombre']?.toString() ?? '',
-        d['legajo']?.toString() ?? '',
-        d['dependencia']?.toString() ?? '',
-        d['cargo']?.toString() ?? '',
-        d['turno']?.toString() ?? '',
-        d['fecha']?.toString() ?? '',
-        d['resultado']?.toString() ?? '',
-        d['graduacion']?.toString() ?? '',
-        d['servicio_extra']?.toString() ?? '',
-        d['observacion']?.toString() ?? '',
+        _get(d, 'apellido_nombre', 'apellidoNombre'),
+        _get(d, 'legajo', 'legajo'),
+        _get(d, 'dependencia', 'dependencia'),
+        _get(d, 'cargo', 'cargo'),
+        _get(d, 'fecha', 'fecha'),
+        _get(d, 'resultado', 'resultado'),
+        _get(d, 'graduacion', 'graduacion'),
+        _get(d, 'servicio_extra', 'servicioExtra'),
+        _get(d, 'observacion', 'observacion'),
       ]));
     }
 
