@@ -5,6 +5,7 @@ import '../database/database_helper.dart';
 import '../main.dart';
 import '../models/control_alcoholemia.dart';
 import '../services/api_client.dart';
+import '../services/report_exporter.dart';
 import 'control_alcoholemia_form_screen.dart';
 import 'seleccion_agente_screen.dart';
 
@@ -28,6 +29,7 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
   bool _loading = false;
   bool _offline = false;
   bool _confirmandoBorrado = false;
+  bool _exportando = false;
   String _turno = '';
 
   @override
@@ -206,6 +208,46 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
     return desde == hasta ? desde : '$desde a $hasta';
   }
 
+  Future<void> _exportarPdf() async {
+    if (_resultados.isEmpty) return;
+    setState(() => _exportando = true);
+    try {
+      await ReportExporter.exportAlcoholemiaPdf(
+        context: context,
+        datos: _resultados,
+        desde: _desdeController.text.trim(),
+        hasta: _hastaController.text.trim(),
+      );
+    } on Exception catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+    if (mounted) setState(() => _exportando = false);
+  }
+
+  Future<void> _exportarExcel() async {
+    if (_resultados.isEmpty) return;
+    setState(() => _exportando = true);
+    try {
+      await ReportExporter.exportAlcoholemiaExcel(
+        context: context,
+        datos: _resultados,
+        desde: _desdeController.text.trim(),
+        hasta: _hastaController.text.trim(),
+      );
+    } on Exception catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+    if (mounted) setState(() => _exportando = false);
+  }
+
   Future<void> _eliminarControl(Map<String, dynamic> item) async {
     final id = item['id'] as int;
     final nombre = item['apellidoNombre'] as String? ??
@@ -346,6 +388,32 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
                               ),
                             ),
                           ),
+                  ),
+                ],
+                if (_resultados.isNotEmpty) ...[
+                  const SizedBox(width: 4),
+                  SizedBox(
+                    height: 30,
+                    child: OutlinedButton.icon(
+                      onPressed: _exportando ? null : _exportarPdf,
+                      icon: _exportando
+                          ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))
+                          : const Icon(Icons.picture_as_pdf, size: 14, color: Colors.red),
+                      label: const Text('PDF', style: TextStyle(fontSize: 11)),
+                      style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8)),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  SizedBox(
+                    height: 30,
+                    child: OutlinedButton.icon(
+                      onPressed: _exportando ? null : _exportarExcel,
+                      icon: _exportando
+                          ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))
+                          : const Icon(Icons.table_chart, size: 14, color: Colors.green),
+                      label: const Text('Excel', style: TextStyle(fontSize: 11)),
+                      style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8)),
+                    ),
                   ),
                 ],
               ],
