@@ -570,6 +570,8 @@ class _ControlCard extends StatelessWidget {
         item['apellido_nombre'] as String? ??
         'Desconocido';
     final legajo = item['legajo'] as String? ?? '-';
+    final dep = item['dependencia'] as String?;
+    final car = item['cargo'] as String?;
     final fecha = item['fecha'] as String? ?? '';
     final resultado = item['resultado'] as String? ?? 'Negativo';
     final graduacion = item['graduacion'];
@@ -630,6 +632,22 @@ class _ControlCard extends StatelessWidget {
                             color: AppColors.onSurface.withValues(alpha: 0.5),
                           ),
                         ),
+                        if (dep != null && dep.isNotEmpty)
+                          Text(
+                            dep,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: AppColors.onSurface.withValues(alpha: 0.5),
+                            ),
+                          ),
+                        if (car != null && car.isNotEmpty)
+                          Text(
+                            car,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: AppColors.onSurface.withValues(alpha: 0.5),
+                            ),
+                          ),
                       ],
                     ),
                   ),
