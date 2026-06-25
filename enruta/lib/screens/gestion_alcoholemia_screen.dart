@@ -332,7 +332,7 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
                   ),
                 ),
                 if (_puedeBorrarTodo) ...[
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 4),
                   Flexible(
                     child: _confirmandoBorrado
                         ? Row(
@@ -342,33 +342,31 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
                                 '¿Seguro?',
                                 style: TextStyle(
                                   color: Colors.red,
-                                  fontSize: 12,
+                                  fontSize: 11,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              const SizedBox(width: 4),
                               SizedBox(
-                                height: 30,
+                                height: 28,
                                 child: ElevatedButton(
                                   onPressed: _borrarTodosDelRango,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.red,
                                     foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                                    textStyle: const TextStyle(fontSize: 11),
+                                    padding: const EdgeInsets.symmetric(horizontal: 6),
+                                    textStyle: const TextStyle(fontSize: 10),
                                   ),
-                                  child: const Text('Sí, borrar'),
+                                  child: const Text('Sí'),
                                 ),
                               ),
-                              const SizedBox(width: 4),
                               SizedBox(
-                                height: 30,
+                                height: 28,
                                 child: OutlinedButton(
                                   onPressed: () =>
                                       setState(() => _confirmandoBorrado = false),
                                   style: OutlinedButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(horizontal: 6),
-                                    textStyle: const TextStyle(fontSize: 11),
+                                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                                    textStyle: const TextStyle(fontSize: 10),
                                   ),
                                   child: const Text('No'),
                                 ),
@@ -376,43 +374,41 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
                             ],
                           )
                         : SizedBox(
-                            height: 30,
+                            height: 28,
                             child: ElevatedButton.icon(
                               onPressed: _borrarTodosDelRango,
-                              icon: const Icon(Icons.delete_sweep, size: 16),
-                              label: const Text('Borrar', style: TextStyle(fontSize: 11)),
+                              icon: const Icon(Icons.delete_sweep, size: 14),
+                              label: const Text('Borrar', style: TextStyle(fontSize: 10)),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.red,
                                 foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(horizontal: 10),
+                                padding: const EdgeInsets.symmetric(horizontal: 6),
                               ),
                             ),
                           ),
                   ),
                 ],
                 if (_resultados.isNotEmpty) ...[
-                  const SizedBox(width: 4),
                   SizedBox(
-                    height: 30,
+                    height: 28,
                     child: OutlinedButton.icon(
                       onPressed: _exportando ? null : _exportarPdf,
                       icon: _exportando
-                          ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))
-                          : const Icon(Icons.picture_as_pdf, size: 14, color: Colors.red),
-                      label: const Text('PDF', style: TextStyle(fontSize: 11)),
-                      style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8)),
+                          ? const SizedBox(width: 12, height: 12, child: CircularProgressIndicator(strokeWidth: 2))
+                          : const Icon(Icons.picture_as_pdf, size: 12, color: Colors.red),
+                      label: const Text('PDF', style: TextStyle(fontSize: 10)),
+                      style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4)),
                     ),
                   ),
-                  const SizedBox(width: 4),
                   SizedBox(
-                    height: 30,
+                    height: 28,
                     child: OutlinedButton.icon(
                       onPressed: _exportando ? null : _exportarExcel,
                       icon: _exportando
-                          ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))
-                          : const Icon(Icons.table_chart, size: 14, color: Colors.green),
-                      label: const Text('Excel', style: TextStyle(fontSize: 11)),
-                      style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8)),
+                          ? const SizedBox(width: 12, height: 12, child: CircularProgressIndicator(strokeWidth: 2))
+                          : const Icon(Icons.table_chart, size: 12, color: Colors.green),
+                      label: const Text('Excel', style: TextStyle(fontSize: 10)),
+                      style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4)),
                     ),
                   ),
                 ],
