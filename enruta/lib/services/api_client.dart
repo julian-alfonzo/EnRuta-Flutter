@@ -256,11 +256,18 @@ class ApiClient {
     String? fecha,
     String? desde,
     String? hasta,
+    String? search,
+    int page = 1,
+    int limit = 50,
   }) async {
-    final params = <String, String>{};
+    final params = <String, String>{
+      'page': page.toString(),
+      'limit': limit.toString(),
+    };
     if (fecha != null) params['fecha'] = fecha;
     if (desde != null) params['desde'] = desde;
     if (hasta != null) params['hasta'] = hasta;
+    if (search != null && search.isNotEmpty) params['search'] = search;
     return _get('/alcoholemias', params);
   }
 

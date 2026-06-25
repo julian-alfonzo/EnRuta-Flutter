@@ -6,6 +6,7 @@ import '../app_theme.dart';
 import '../main.dart';
 import '../services/api_client.dart';
 import 'agentes_screen.dart';
+import 'gestion_alcoholemia_screen.dart';
 import 'login_screen.dart';
 import 'reportes_screen.dart';
 import 'seleccion_agente_screen.dart';
@@ -124,14 +125,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   _MenuCard(
                     icon: Icons.air,
                     label: 'Alcoholemia',
-                    subtitle: 'Controles',
+                    subtitle: 'Buscar y gestionar',
                     color: AppColors.secondary,
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const SeleccionAgenteScreen(
-                              destino: 'alcoholemia'),
+                          builder: (_) =>
+                              const GestionAlcoholemiaScreen(),
                         ),
                       );
                     },
