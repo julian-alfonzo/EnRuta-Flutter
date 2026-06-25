@@ -45,16 +45,25 @@ void main() {
       }
     });
 
-    test('GET /agentes - con búsqueda', () async {
+    test('GET /agentes - con filtros dependencia/cargo/turno', () async {
       final login = await api.login('admin', 'admin123');
       final token = (login['data'] as Map)['accessToken'] as String;
       api.setTokens(accessToken: token, refreshToken: '');
 
-      final response = await api.getAgentes(search: 'Castillo');
+      final response = await api.getAgentes(dependencia: 'Transito');
       final data = response['data'] as List;
-      expect(data.isNotEmpty, true);
+      expect(data, isNotNull);
       expect(response['meta'], isNotNull);
-      expect(response['meta']['total'], greaterThan(0));
+    });
+
+    test('GET /agentes - con filtro turno', () async {
+      final login = await api.login('admin', 'admin123');
+      final token = (login['data'] as Map)['accessToken'] as String;
+      api.setTokens(accessToken: token, refreshToken: '');
+
+      final response = await api.getAgentes(turno: 'ROTATIVO');
+      final data = response['data'] as List;
+      expect(data, isNotNull);
     });
 
     test('GET /agentes/:id - obtener uno', () async {
@@ -111,17 +120,62 @@ void main() {
       expect(delete.isEmpty, true);
     });
 
-    test('GET /alcoholemias/reporte - con JOIN', () async {
+    test('GET /alcoholemias - buscar con rango de fechas', () async {
       final login = await api.login('admin', 'admin123');
       final token = (login['data'] as Map)['accessToken'] as String;
       api.setTokens(accessToken: token, refreshToken: '');
 
-      final response = await api.getReporteAlcoholemia(
+      final response = await api.getAlcoholemias(
         desde: '2020-01-01',
         hasta: '2026-12-31',
       );
       final data = response['data'] as List?;
       expect(data, isNotNull);
+      expect(response['meta'], isNotNull);
+      // Debe incluir legajo y apellidoNombre del JOIN
+      if (data!.isNotEmpty) {
+        final first = data.first as Map<String, dynamic>;
+        expect(first.containsKey('legajo'), isTrue);
+        expect(first.containsKey('apellidoNombre'), isTrue);
+      }
+    });
+
+    test('GET /alcoholemias - buscar con filtro dependencia', () async {
+      final login = await api.login('admin', 'admin123');
+      final token = (login['data'] as Map)['accessToken'] as String;
+      api.setTokens(accessToken: token, refreshToken: '');
+
+      final response = await api.getAlcoholemias(dependencia: 'Transito');
+      final data = response['data'] as List?;
+      expect(data, isNotNull);
+    });
+
+    test('GET /alcoholemias - buscar con filtro turno', () async {
+      final login = await api.login('admin', 'admin123');
+      final token = (login['data'] as Map)['accessToken'] as String;
+      api.setTokens(accessToken: token, refreshToken: '');
+
+      final response = await api.getAlcoholemias(turno: 'ROTATIVO');
+      final data = response['data'] as List?;
+      expect(data, isNotNull);
+    });
+
+    test('DELETE /alcoholemias?fecha - borrado masivo por dia', () async {
+      final login = await api.login('admin', 'admin123');
+      final token = (login['data'] as Map)['accessToken'] as String;
+      api.setTokens(accessToken: token, refreshToken: '');
+
+      final response = await api.deleteAlcoholemiasByFecha('2099-12-31');
+      expect(response.isEmpty, isTrue);
+    });
+
+    test('DELETE /alcoholemias?desde=&hasta= - borrado masivo por rango', () async {
+      final login = await api.login('admin', 'admin123');
+      final token = (login['data'] as Map)['accessToken'] as String;
+      api.setTokens(accessToken: token, refreshToken: '');
+
+      final response = await api.deleteAlcoholemiasByRango('2099-01-01', '2099-01-31');
+      expect(response.isEmpty, isTrue);
     });
 
     test('POST /sync/pull - sincronización', () async {
