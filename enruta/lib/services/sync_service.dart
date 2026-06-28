@@ -202,13 +202,14 @@ class SyncService {
 
   Future<void> _executeAgenteSync(
       String operacion, Map<String, dynamic> payload) async {
+    final legajo = payload['legajo'] as String;
     switch (operacion) {
       case 'create':
         await _api!.createAgente(payload);
       case 'update':
-        await _api!.updateAgente(payload['id'] as int, payload);
+        await _api!.updateAgenteByLegajo(legajo, payload);
       case 'delete':
-        await _api!.deleteAgente(payload['id'] as int);
+        await _api!.deleteAgenteByLegajo(legajo);
     }
   }
 
@@ -216,7 +217,12 @@ class SyncService {
       String operacion, Map<String, dynamic> payload) async {
     switch (operacion) {
       case 'create':
-        await _api!.createAlcoholemia(payload['agenteId'] as int, payload);
+        final legajo = payload['agenteLegajo'] as String?;
+        if (legajo != null) {
+          await _api!.createAlcoholemiaByLegajo(legajo, payload);
+        } else if (payload['agenteId'] != null) {
+          await _api!.createAlcoholemia(payload['agenteId'] as int, payload);
+        }
       case 'update':
         await _api!.updateAlcoholemia(payload['id'] as int, payload);
       case 'delete':
@@ -228,7 +234,12 @@ class SyncService {
       String operacion, Map<String, dynamic> payload) async {
     switch (operacion) {
       case 'create':
-        await _api!.createObservacion(payload['agenteId'] as int, payload);
+        final legajo = payload['agenteLegajo'] as String?;
+        if (legajo != null) {
+          await _api!.createObservacionByLegajo(legajo, payload);
+        } else if (payload['agenteId'] != null) {
+          await _api!.createObservacion(payload['agenteId'] as int, payload);
+        }
       case 'update':
         await _api!.updateObservacion(payload['id'] as int, payload);
       case 'delete':
@@ -246,31 +257,42 @@ class SyncService {
       final lastSync =
           prefs.getString(_lastSyncKey) ?? '2000-01-01T00:00:00Z';
       final response = await _api!.syncPull(lastSync);
+      final data = response['data'] as Map<String, dynamic>?;
+      if (data == null) return;
 
-      final agentes = (response['agentes'] as List<dynamic>?) ?? [];
+      final agentes = (data['agentes'] as List<dynamic>?) ?? [];
       for (final a in agentes) {
         final serverMap = a as Map<String, dynamic>;
         await _mergeAgente(serverMap);
       }
 
       final controles =
-          (response['alcoholemias'] as List<dynamic>?) ?? [];
+          (data['alcoholemias'] as List<dynamic>?) ?? [];
       for (final c in controles) {
         final serverMap = c as Map<String, dynamic>;
         await _mergeControl(serverMap);
       }
 
       final observaciones =
-          (response['observaciones'] as List<dynamic>?) ?? [];
+          (data['observaciones'] as List<dynamic>?) ?? [];
       for (final o in observaciones) {
         final serverMap = o as Map<String, dynamic>;
         await _mergeObservacion(serverMap);
       }
 
-      final deleted = response['deleted'] as Map<String, dynamic>?;
+      final deleted = data['deleted'] as Map<String, dynamic>?;
       if (deleted != null) {
-        for (final id in (deleted['agentes'] as List<dynamic>?) ?? []) {
-          await _deleteLocalIfNotPending('agente', id as int);
+        for (final d in (deleted['agentes'] as List<dynamic>?) ?? []) {
+          final deletedAgent = d as Map<String, dynamic>;
+          final legajo = deletedAgent['legajo'] as String?;
+          if (legajo != null) {
+            final local = await _db.getAgenteByLegajo(legajo);
+            if (local != null) {
+              await _deleteLocalIfNotPending('agente', local.id!);
+            }
+          } else {
+            await _deleteLocalIfNotPending('agente', deletedAgent['id'] as int);
+          }
         }
         for (final id
             in (deleted['alcoholemias'] as List<dynamic>?) ?? []) {
@@ -282,7 +304,7 @@ class SyncService {
         }
       }
 
-      final serverTime = response['serverTime'] as String?;
+      final serverTime = data['serverTime'] as String?;
       if (serverTime != null) {
         await prefs.setString(_lastSyncKey, serverTime);
       }
@@ -326,6 +348,11 @@ class SyncService {
 
   Future<void> _mergeControl(Map<String, dynamic> serverMap) async {
     final serverId = serverMap['id'] as int?;
+    final agenteLegajo = serverMap['agenteLegajo'] as String?;
+    final agenteId = await _resolveLegajoToLocalId(agenteLegajo, serverMap['agenteId'] as int?);
+    final adjusted = Map<String, dynamic>.from(serverMap);
+    if (agenteId != null) adjusted['agenteId'] = agenteId;
+
     if (serverId != null) {
       final existing = await _db.getControlesByAgente(serverId);
       if (existing.isNotEmpty) {
@@ -333,17 +360,22 @@ class SyncService {
             'alcoholemia', serverId);
         if (!hasPending) {
           await _db.updateControl(
-              ControlAlcoholemia.fromApiJson(serverMap));
+              ControlAlcoholemia.fromApiJson(adjusted));
         }
         return;
       }
     }
     await _db.insertControl(
-        ControlAlcoholemia.fromApiJson(serverMap));
+        ControlAlcoholemia.fromApiJson(adjusted));
   }
 
   Future<void> _mergeObservacion(Map<String, dynamic> serverMap) async {
     final serverId = serverMap['id'] as int?;
+    final agenteLegajo = serverMap['agenteLegajo'] as String?;
+    final agenteId = await _resolveLegajoToLocalId(agenteLegajo, serverMap['agenteId'] as int?);
+    final adjusted = Map<String, dynamic>.from(serverMap);
+    if (agenteId != null) adjusted['agenteId'] = agenteId;
+
     if (serverId != null) {
       final existing =
           await _db.getObservacionesReclamosByAgente(serverId);
@@ -352,13 +384,19 @@ class SyncService {
             'observacion', serverId);
         if (!hasPending) {
           await _db.updateObservacionReclamo(
-              ObservacionReclamo.fromApiJson(serverMap));
+              ObservacionReclamo.fromApiJson(adjusted));
         }
         return;
       }
     }
     await _db.insertObservacionReclamo(
-        ObservacionReclamo.fromApiJson(serverMap));
+        ObservacionReclamo.fromApiJson(adjusted));
+  }
+
+  Future<int?> _resolveLegajoToLocalId(String? legajo, int? fallbackId) async {
+    if (legajo == null) return fallbackId;
+    final local = await _db.getAgenteByLegajo(legajo);
+    return local?.id ?? fallbackId;
   }
 
   Future<void> _deleteLocalIfNotPending(String entidad, int id) async {

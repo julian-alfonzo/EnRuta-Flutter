@@ -51,8 +51,8 @@ class _AgenteDetailScreenState extends State<AgenteDetailScreen>
     try {
       final api = AppServices.instance.apiClient;
       final result = await Future.wait([
-        api.getAlcoholemiasByAgente(_agente.id!),
-        api.getObservacionesByAgente(_agente.id!),
+        api.getAlcoholemiasByLegajo(_agente.legajo),
+        api.getObservacionesByLegajo(_agente.legajo),
       ]);
       final controlesData = result[0]['data'] as List<dynamic>? ?? [];
       final observacionesData = result[1]['data'] as List<dynamic>? ?? [];

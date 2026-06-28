@@ -9,7 +9,6 @@ class ApiService {
   final ApiClient _api;
   final DatabaseHelper _db;
   final SyncService _sync;
-  final Map<int, int> _localToServerId = {};
 
   ApiService({
     required String baseUrl,
@@ -27,26 +26,6 @@ class ApiService {
   }
 
   // ── Auth ──
-
-  Future<int?> _resolveServerAgentId(int localId) async {
-    if (_localToServerId.containsKey(localId)) {
-      return _localToServerId[localId];
-    }
-    try {
-      final local = await _db.getAgenteById(localId);
-      if (local == null) return null;
-      final response = await _api.getAgenteByLegajo(local.legajo);
-      final data = response['data'] as Map<String, dynamic>?;
-      if (data != null) {
-        final serverId = data['id'] as int;
-        _localToServerId[localId] = serverId;
-        return serverId;
-      }
-    } on ApiException {
-      // sin conexión
-    }
-    return null;
-  }
 
   Future<bool> login(String usuario, String password) async {
     try {
@@ -76,11 +55,11 @@ class ApiService {
   }
 
   Future<void> updateAgenteOnline(Agente agente) async {
-    await _api.updateAgente(agente.id!, agente.toJson());
+    await _api.updateAgenteByLegajo(agente.legajo, agente.toJson());
   }
 
-  Future<void> deleteAgenteOnline(int id) async {
-    await _api.deleteAgente(id);
+  Future<void> deleteAgenteOnline(String legajo) async {
+    await _api.deleteAgenteByLegajo(legajo);
   }
 
   // ── Controles Alcoholemia (online) ──
@@ -97,8 +76,8 @@ class ApiService {
   }
 
   Future<void> createAlcoholemiaOnline(
-      int agenteId, ControlAlcoholemia control) async {
-    await _api.createAlcoholemia(agenteId, control.toJson());
+      String legajo, ControlAlcoholemia control) async {
+    await _api.createAlcoholemiaByLegajo(legajo, control.toJson());
   }
 
   Future<void> updateAlcoholemiaOnline(ControlAlcoholemia control) async {
@@ -111,16 +90,16 @@ class ApiService {
 
   // ── Observaciones (online) ──
 
-  Future<List<Map<String, dynamic>>> fetchReporteAgente(int agenteId) async {
-    final response = await _api.getReporteAgente(agenteId);
+  Future<List<Map<String, dynamic>>> fetchReporteAgente(String legajo) async {
+    final response = await _api.getReporteAgenteByLegajo(legajo);
     final data = response['data'] as List<dynamic>?;
     if (data == null) return [];
     return data.map((e) => Map<String, dynamic>.from(e as Map)).toList();
   }
 
   Future<void> createObservacionOnline(
-      int agenteId, ObservacionReclamo o) async {
-    await _api.createObservacion(agenteId, o.toJson());
+      String legajo, ObservacionReclamo o) async {
+    await _api.createObservacionByLegajo(legajo, o.toJson());
   }
 
   Future<void> updateObservacionOnline(ObservacionReclamo o) async {
@@ -129,6 +108,13 @@ class ApiService {
 
   Future<void> deleteObservacionOnline(int id) async {
     await _api.deleteObservacion(id);
+  }
+
+  // ── Helper: resolver legajo desde ID local ──
+
+  Future<String?> _getLegajoFromLocalId(int localId) async {
+    final local = await _db.getAgenteById(localId);
+    return local?.legajo;
   }
 
   // ── CRUD local + remoto ──
@@ -147,7 +133,7 @@ class ApiService {
   Future<void> updateAgente(Agente agente) async {
     await _db.updateAgente(agente);
     try {
-      await _api.updateAgente(agente.id!, agente.toJson());
+      await _api.updateAgenteByLegajo(agente.legajo, agente.toJson());
     } on ApiException {
       await _sync.enqueue(
           'agente', 'update', agente.id, agente.toJson());
@@ -155,25 +141,26 @@ class ApiService {
   }
 
   Future<void> deleteAgente(int id) async {
+    final agente = await _db.getAgenteById(id);
     await _db.deleteAgente(id);
+    if (agente == null) return;
     try {
-      await _api.deleteAgente(id);
+      await _api.deleteAgenteByLegajo(agente.legajo);
     } on ApiException {
       await _sync.enqueue(
-          'agente', 'delete', id, {'id': id});
+          'agente', 'delete', id, {'legajo': agente.legajo});
     }
   }
 
   Future<int> createControl(ControlAlcoholemia control) async {
     final localId = await _db.insertControl(control);
-    final serverAgenteId = await _resolveServerAgentId(control.agenteId);
-    if (serverAgenteId != null) {
+    final legajo = await _getLegajoFromLocalId(control.agenteId);
+    if (legajo != null) {
       try {
-        await _api.createAlcoholemia(
-            serverAgenteId, control.toJson());
+        await _api.createAlcoholemiaByLegajo(legajo, control.toJson());
       } on ApiException {
         await _sync.enqueue('alcoholemia', 'create', localId,
-            {...control.toJson(), 'agenteId': serverAgenteId});
+            {...control.toJson(), 'agenteLegajo': legajo});
       }
     }
     return localId;
@@ -202,14 +189,13 @@ class ApiService {
 
   Future<int> createObservacion(ObservacionReclamo o) async {
     final localId = await _db.insertObservacionReclamo(o);
-    final serverAgenteId = await _resolveServerAgentId(o.agenteId);
-    if (serverAgenteId != null) {
+    final legajo = await _getLegajoFromLocalId(o.agenteId);
+    if (legajo != null) {
       try {
-        await _api.createObservacion(
-            serverAgenteId, o.toJson());
+        await _api.createObservacionByLegajo(legajo, o.toJson());
       } on ApiException {
         await _sync.enqueue('observacion', 'create', localId,
-            {...o.toJson(), 'agenteId': serverAgenteId});
+            {...o.toJson(), 'agenteLegajo': legajo});
       }
     }
     return localId;

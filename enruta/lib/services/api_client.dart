@@ -229,10 +229,6 @@ class ApiClient {
     return _get('/agentes', params);
   }
 
-  Future<Map<String, dynamic>> getAgenteById(int id) async {
-    return _get('/agentes/$id');
-  }
-
   Future<Map<String, dynamic>> getAgenteByLegajo(String legajo) async {
     return _get('/agentes/legajo/$legajo');
   }
@@ -241,19 +237,24 @@ class ApiClient {
     return _post('/agentes', agente);
   }
 
-  Future<Map<String, dynamic>> updateAgente(
-      int id, Map<String, dynamic> agente) async {
-    return _put('/agentes/$id', agente);
+  Future<Map<String, dynamic>> updateAgenteByLegajo(
+      String legajo, Map<String, dynamic> agente) async {
+    return _put('/agentes/legajo/$legajo', agente);
   }
 
-  Future<Map<String, dynamic>> deleteAgente(int id) async {
-    return _delete('/agentes/$id');
+  Future<Map<String, dynamic>> deleteAgenteByLegajo(String legajo) async {
+    return _delete('/agentes/legajo/$legajo');
   }
 
   // ── Controles de Alcoholemia ──
 
-  Future<Map<String, dynamic>> getAlcoholemiasByAgente(int agenteId) async {
-    return _get('/agentes/$agenteId/alcoholemias');
+  Future<Map<String, dynamic>> getAlcoholemiasByLegajo(String legajo) async {
+    return _get('/agentes/legajo/$legajo/alcoholemias');
+  }
+
+  Future<Map<String, dynamic>> createAlcoholemiaByLegajo(
+      String legajo, Map<String, dynamic> control) async {
+    return _post('/agentes/legajo/$legajo/alcoholemias', control);
   }
 
   Future<Map<String, dynamic>> getAlcoholemias({
@@ -313,12 +314,17 @@ class ApiClient {
 
   // ── Observaciones / Reclamos ──
 
-  Future<Map<String, dynamic>> getObservacionesByAgente(int agenteId) async {
-    return _get('/agentes/$agenteId/observaciones');
+  Future<Map<String, dynamic>> getObservacionesByLegajo(String legajo) async {
+    return _get('/agentes/legajo/$legajo/observaciones');
   }
 
-  Future<Map<String, dynamic>> getReporteAgente(int agenteId) async {
-    return _get('/agentes/$agenteId/observaciones/reporte');
+  Future<Map<String, dynamic>> getReporteAgenteByLegajo(String legajo) async {
+    return _get('/agentes/legajo/$legajo/observaciones/reporte');
+  }
+
+  Future<Map<String, dynamic>> createObservacionByLegajo(
+      String legajo, Map<String, dynamic> observacion) async {
+    return _post('/agentes/legajo/$legajo/observaciones', observacion);
   }
 
   Future<Map<String, dynamic>> createObservacion(

@@ -1,6 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:enruta/services/api_client.dart';
 
+// NOTE: This integration test requires a running API server at localhost:3000.
+// Run with: flutter test test/integration/api_integration_test.dart
+
 void main() {
   const baseUrl = 'http://localhost:3000';
 
