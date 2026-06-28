@@ -19,7 +19,7 @@ class GestionAlcoholemiaScreen extends StatefulWidget {
 }
 
 class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
-  final _db = DatabaseHelper();
+  final _db = databaseHelper;
   final _searchController = TextEditingController();
   final _desdeController = TextEditingController();
   final _hastaController = TextEditingController();

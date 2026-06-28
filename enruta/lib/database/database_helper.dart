@@ -20,13 +20,20 @@ class DatabaseHelper implements AgenteRepository, ControlAlcoholemiaRepository, 
 
   static Database? _database;
 
+  static bool _testMode = false;
+
+  static void enableTestMode() {
+    _testMode = true;
+  }
+
   static Future<void> resetForTest() async {
     final db = _database;
-    _database = null;
     if (db != null) {
-      final path = db.path;
+      _database = null;
       await db.close();
-      await deleteDatabase(path);
+      if (!_testMode) {
+        await deleteDatabase(db.path);
+      }
     }
   }
 
@@ -37,8 +44,7 @@ class DatabaseHelper implements AgenteRepository, ControlAlcoholemiaRepository, 
   }
 
   Future<Database> _initDatabase() async {
-    final dbPath = await getDatabasesPath();
-    final path = join(dbPath, 'enruta.db');
+    final path = _testMode ? inMemoryDatabasePath : join(await getDatabasesPath(), 'enruta.db');
     return await openDatabase(
       path,
       version: 4,
