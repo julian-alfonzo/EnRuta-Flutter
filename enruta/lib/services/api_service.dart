@@ -4,21 +4,23 @@ import '../models/control_alcoholemia.dart';
 import '../models/observacion_reclamo.dart';
 import 'api_client.dart';
 import 'sync_service.dart';
+import '../core/interfaces/api_client_interface.dart';
+import '../core/interfaces/sync_service_interface.dart';
 
 class ApiService {
-  final ApiClient _api;
+  final ApiClientInterface _api;
   final DatabaseHelper _db;
-  final SyncService _sync;
+  final SyncServiceInterface _sync;
 
   ApiService({
     required String baseUrl,
-    ApiClient? apiClient,
-    SyncService? syncService,
+    ApiClientInterface? apiClient,
+    SyncServiceInterface? syncService,
   })  : _api = apiClient ?? ApiClient(baseUrl: baseUrl),
         _db = DatabaseHelper(),
         _sync = syncService ?? SyncService();
 
-  ApiClient get client => _api;
+  ApiClientInterface get client => _api;
 
   Future<void> dispose() {
     _api.dispose();
@@ -135,8 +137,9 @@ class ApiService {
     try {
       await _api.updateAgenteByLegajo(agente.legajo, agente.toJson());
     } on ApiException {
-      await _sync.enqueue(
-          'agente', 'update', agente.id, agente.toJson());
+      if (agente.id != null) {
+        await _sync.enqueue('agente', 'update', agente.id!, agente.toJson());
+      }
     }
   }
 
@@ -172,8 +175,10 @@ class ApiService {
       await _api.updateAlcoholemia(
           control.id!, control.toJson());
     } on ApiException {
-      await _sync.enqueue('alcoholemia', 'update', control.id,
-          {...control.toJson(), 'id': control.id});
+      if (control.id != null) {
+        await _sync.enqueue('alcoholemia', 'update', control.id!,
+            {...control.toJson(), 'id': control.id});
+      }
     }
   }
 
@@ -206,8 +211,10 @@ class ApiService {
     try {
       await _api.updateObservacion(o.id!, o.toJson());
     } on ApiException {
-      await _sync.enqueue('observacion', 'update', o.id,
-          {...o.toJson(), 'id': o.id});
+      if (o.id != null) {
+        await _sync.enqueue('observacion', 'update', o.id!,
+            {...o.toJson(), 'id': o.id});
+      }
     }
   }
 

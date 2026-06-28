@@ -5,6 +5,7 @@ import '../database/database_helper.dart';
 import '../main.dart';
 import '../models/agente.dart';
 import '../models/control_alcoholemia.dart';
+import '../di/injection.dart';
 
 class ControlAlcoholemiaFormScreen extends StatefulWidget {
   final int agenteId;
@@ -84,9 +85,9 @@ class _ControlAlcoholemiaFormScreenState
 
     try {
       if (_esEdicion) {
-        await AppServices.instance.apiService.updateControl(control);
+        await apiService.updateControl(control);
       } else {
-        await AppServices.instance.apiService.createControl(control);
+        await apiService.createControl(control);
       }
       if (mounted) Navigator.pop(context, true);
     } on Exception catch (e) {

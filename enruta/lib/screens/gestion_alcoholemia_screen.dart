@@ -6,6 +6,7 @@ import '../main.dart';
 import '../models/control_alcoholemia.dart';
 import '../services/api_client.dart';
 import '../services/report_exporter.dart';
+import '../di/injection.dart';
 import 'control_alcoholemia_form_screen.dart';
 import 'seleccion_agente_screen.dart';
 
@@ -54,8 +55,7 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
     });
 
     try {
-      final api = AppServices.instance.apiClient;
-      final response = await api.getAlcoholemias(
+      final response = await apiClient.getAlcoholemias(
         search: search.isNotEmpty ? search : null,
         desde: desde.isNotEmpty ? desde : null,
         hasta: hasta.isNotEmpty ? hasta : null,
@@ -176,7 +176,7 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
     }
 
     try {
-      await AppServices.instance.apiClient.deleteAlcoholemiasByRango(desde, hasta);
+      await apiClient.deleteAlcoholemiasByRango(desde, hasta);
       setState(() {
         _confirmandoBorrado = false;
         _resultados = [];
@@ -274,7 +274,7 @@ class _GestionAlcoholemiaScreenState extends State<GestionAlcoholemiaScreen> {
     if (ok != true) return;
 
     try {
-      await AppServices.instance.apiService.deleteControl(id);
+      await apiService.deleteControl(id);
       _buscar();
     } on Exception catch (e) {
       if (mounted) {

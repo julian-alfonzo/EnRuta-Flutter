@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../main.dart';
 import '../app_theme.dart';
 import '../models/observacion_reclamo.dart';
+import '../di/injection.dart';
 
 class ObservacionReclamoFormScreen extends StatefulWidget {
   final int agenteId;
@@ -66,9 +67,9 @@ class _ObservacionReclamoFormScreenState
 
     try {
       if (_esEdicion) {
-        await AppServices.instance.apiService.updateObservacion(or);
+        await apiService.updateObservacion(or);
       } else {
-        await AppServices.instance.apiService.createObservacion(or);
+        await apiService.createObservacion(or);
       }
       if (mounted) Navigator.pop(context, true);
     } on Exception catch (e) {

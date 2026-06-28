@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../app_theme.dart';
 import '../main.dart';
+import '../di/injection.dart';
 import '../services/api_client.dart';
 import 'agentes_screen.dart';
 import 'gestion_alcoholemia_screen.dart';
@@ -42,18 +43,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _checkStatus() async {
-    final api = AppServices.instance.apiClient;
-    final sync = AppServices.instance.syncService;
     try {
-      await api.getAgentes(limit: 1);
+      await apiClient.getAgentes(limit: 1);
       _conectado = true;
     } on ApiException catch (e) {
       _conectado = e.statusCode >= 400 && e.statusCode < 500;
     } catch (_) {
       _conectado = false;
     }
-    _pendientes = await sync.pendingCount;
-    _fallidos = await sync.failedCount;
+    _pendientes = await syncService.pendingCount;
+    _fallidos = await syncService.failedCount;
     if (mounted) setState(() {});
   }
 

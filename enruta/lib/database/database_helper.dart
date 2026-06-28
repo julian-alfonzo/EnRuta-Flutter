@@ -8,8 +8,12 @@ import 'package:csv/csv.dart';
 import '../models/agente.dart';
 import '../models/control_alcoholemia.dart';
 import '../models/observacion_reclamo.dart';
+import '../core/interfaces/agente_repository.dart';
+import '../core/interfaces/control_alcoholemia_repository.dart';
+import '../core/interfaces/observacion_reclamo_repository.dart';
+import '../core/interfaces/sync_queue_repository.dart';
 
-class DatabaseHelper {
+class DatabaseHelper implements AgenteRepository, ControlAlcoholemiaRepository, ObservacionReclamoRepository, SyncQueueRepository {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   factory DatabaseHelper() => _instance;
   DatabaseHelper._internal();

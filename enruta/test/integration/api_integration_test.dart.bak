@@ -64,7 +64,7 @@ void main() {
       final token = (login['data'] as Map)['accessToken'] as String;
       api.setTokens(accessToken: token, refreshToken: '');
 
-      final response = await api.getAgenteById(1);
+      final response = await api.getAgenteByLegajo(1);
       final data = response['data'] as Map<String, dynamic>;
       expect(data['id'], 1);
       expect(data['legajo'], isNotNull);
@@ -99,7 +99,7 @@ void main() {
       final newId = created['id'] as int;
       expect(created['legajo'], legajo);
 
-      final updated = await api.updateAgente(newId, {
+      final updated = await api.updateAgenteByLegajo(newId, {
         'legajo': legajo,
         'apellidoNombre': 'Test Updated',
         'dependencia': 'Updated Dept',
@@ -108,7 +108,7 @@ void main() {
       expect(updatedData['apellidoNombre'], 'Test Updated');
       expect(updatedData['dependencia'], 'Updated Dept');
 
-      final delete = await api.deleteAgente(newId);
+      final delete = await api.deleteAgenteByLegajo(newId);
       expect(delete.isEmpty, true);
     });
 

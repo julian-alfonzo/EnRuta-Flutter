@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../main.dart';
 import '../models/agente.dart';
+import '../di/injection.dart';
 
 class AgenteFormScreen extends StatefulWidget {
   final Agente? agente;
@@ -70,9 +71,9 @@ class _AgenteFormScreenState extends State<AgenteFormScreen> {
 
     try {
       if (_esEdicion) {
-        await AppServices.instance.apiService.updateAgente(agente);
+        await apiService.updateAgente(agente);
       } else {
-        await AppServices.instance.apiService.createAgente(agente);
+        await apiService.createAgente(agente);
       }
 
       if (mounted) {

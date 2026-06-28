@@ -4,6 +4,7 @@ import '../main.dart';
 import '../app_theme.dart';
 import '../database/database_helper.dart';
 import '../models/agente.dart';
+import '../di/injection.dart';
 import 'agente_detail_screen.dart';
 import 'agente_form_screen.dart';
 
@@ -15,7 +16,7 @@ class AgentesScreen extends StatefulWidget {
 }
 
 class _AgentesScreenState extends State<AgentesScreen> {
-  final _db = DatabaseHelper();
+  final _db = databaseHelper;
   final _searchController = TextEditingController();
   List<Agente> _agentes = [];
   bool _loading = true;
@@ -67,7 +68,7 @@ class _AgentesScreenState extends State<AgentesScreen> {
 
     if (confirmado == true) {
       try {
-        await AppServices.instance.apiService.deleteAgente(agente.id!);
+        await apiService.deleteAgente(agente.id!);
         _cargarAgentes();
       } on Exception catch (e) {
         if (mounted) {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../app_theme.dart';
 import '../main.dart';
+import '../di/injection.dart';
 import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -24,9 +25,8 @@ class _LoginScreenState extends State<LoginScreen> {
     if (usuario == 'admin' && password == 'admin123') {
       setState(() => _loading = true);
       try {
-        final api = AppServices.instance.apiClient;
-        await api.login('admin', 'admin123').timeout(const Duration(seconds: 5));
-        await AppServices.instance.syncService.fullSync();
+        await apiClient.login('admin', 'admin123').timeout(const Duration(seconds: 5));
+        await syncService.fullSync();
       } catch (_) {
         // sin backend, modo offline
       }

@@ -9,14 +9,16 @@ import '../models/agente.dart';
 import '../models/control_alcoholemia.dart';
 import '../models/observacion_reclamo.dart';
 import 'api_client.dart';
+import '../core/interfaces/api_client_interface.dart';
+import '../core/interfaces/sync_service_interface.dart';
 
-class SyncService {
+class SyncService implements SyncServiceInterface {
   static final SyncService _instance = SyncService._internal();
   factory SyncService() => _instance;
   SyncService._internal();
 
   final DatabaseHelper _db = DatabaseHelper();
-  ApiClient? _api;
+  ApiClientInterface? _api;
 
   StreamSubscription<List<ConnectivityResult>>? _connectivitySub;
   Timer? _debounceTimer;
@@ -31,7 +33,7 @@ class SyncService {
   static const _connectivityDebounceMs = 2000;
   static const _queueBatchSize = 5;
 
-  void configure(ApiClient api) {
+  void configure(ApiClientInterface api) {
     _api = api;
   }
 

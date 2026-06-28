@@ -7,6 +7,7 @@ import '../models/agente.dart';
 import '../models/control_alcoholemia.dart';
 import '../models/observacion_reclamo.dart';
 import '../services/api_client.dart';
+import '../di/injection.dart';
 import 'agente_form_screen.dart';
 import 'control_alcoholemia_form_screen.dart';
 import 'observacion_reclamo_form_screen.dart';
@@ -22,7 +23,7 @@ class AgenteDetailScreen extends StatefulWidget {
 
 class _AgenteDetailScreenState extends State<AgenteDetailScreen>
     with SingleTickerProviderStateMixin {
-  final _db = DatabaseHelper();
+  final _db = databaseHelper;
   late TabController _tabController;
   late Agente _agente;
   List<ControlAlcoholemia> _controles = [];
@@ -49,10 +50,9 @@ class _AgenteDetailScreenState extends State<AgenteDetailScreen>
     if (agente != null) _agente = agente;
 
     try {
-      final api = AppServices.instance.apiClient;
       final result = await Future.wait([
-        api.getAlcoholemiasByLegajo(_agente.legajo),
-        api.getObservacionesByLegajo(_agente.legajo),
+        apiClient.getAlcoholemiasByLegajo(_agente.legajo),
+        apiClient.getObservacionesByLegajo(_agente.legajo),
       ]);
       final controlesData = result[0]['data'] as List<dynamic>? ?? [];
       final observacionesData = result[1]['data'] as List<dynamic>? ?? [];
@@ -132,7 +132,7 @@ class _AgenteDetailScreenState extends State<AgenteDetailScreen>
       ),
     );
     if (ok == true) {
-      await AppServices.instance.apiService.deleteControl(c.id!);
+      await apiService.deleteControl(c.id!);
       _cargarDatos();
     }
   }
@@ -156,7 +156,7 @@ class _AgenteDetailScreenState extends State<AgenteDetailScreen>
       ),
     );
     if (ok == true) {
-      await AppServices.instance.apiService.deleteObservacion(o.id!);
+      await apiService.deleteObservacion(o.id!);
       _cargarDatos();
     }
   }

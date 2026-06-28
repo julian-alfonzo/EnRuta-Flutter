@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:enruta/di/injection.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:enruta/screens/agentes_screen.dart';
 import 'package:enruta/main.dart';
 
 void main() {
   testWidgets('shows initial render of agentes', (t) async {
-    AppServices.init(baseUrl: 'http://test.com');
+    setupDependencyInjection(baseUrl: 'http://test.com');
     await t.pumpWidget(const MaterialApp(home: AgentesScreen()));
     await t.pump();
     await t.pump(const Duration(milliseconds: 300));
